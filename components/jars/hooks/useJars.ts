@@ -1,5 +1,5 @@
 import { QUERY_KEYS } from '@/constants'
-import { JarsQuery } from '@/database/queries'
+import { JarsQuery } from '@/database'
 import { useQuery } from '@tanstack/react-query'
 import { useSQLiteContext } from 'expo-sqlite'
 

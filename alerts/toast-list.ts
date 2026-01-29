@@ -50,44 +50,9 @@ export const toastList = {
     text1: "error",
     text2: "network error",
   },
-  avatar_updated: {
+  add_success: {
     type: "success",
-    text1: "avatar updated successfully",
-    text2: "",
-  },
-  comment_sent_successfully: {
-    type: "success",
-    text1: "comment sent successfully",
-    text2: "",
-  },
-  join_meeting_success: {
-    type: "success",
-    text1: "joined meeting successfully",
-    text2: "",
-  },
-  complete_meeting_success: {
-    type: "success",
-    text1: "completed meeting successfully",
-    text2: "",
-  },
-  otp_sent_success: {
-    type: "success",
-    text1: "otp sent successfully",
-    text2: "",
-  },
-  otp_verified_success: {
-    type: "success",
-    text1: "otp verified successfully",
-    text2: "",
-  },
-  disable_success: {
-    type: "success",
-    text1: "disable success",
-    text2: "",
-  },
-  enable_success: {
-    type: "success",
-    text1: "enable success",
+    text1: "added successfully",
     text2: "",
   },
 } as const

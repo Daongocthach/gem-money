@@ -69,12 +69,12 @@ export default function RootLayout() {
 
   return (
     <Suspense fallback={<LoadingScreen />}>
-      <SQLiteProvider databaseName="gem_money.db" onInit={migrateDbIfNeeded} useSuspense>
-        <ThemeProvider>
-          <GestureHandlerRootView>
-            <BottomSheetProvider>
-              <GlobalAlertProvider>
-                <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={queryClient}>
+        <SQLiteProvider databaseName="gem_money.db" onInit={migrateDbIfNeeded} useSuspense>
+          <ThemeProvider>
+            <GestureHandlerRootView>
+              <BottomSheetProvider>
+                <GlobalAlertProvider>
                   <I18nextProvider i18n={i18next}>
                     <Stack
                       screenOptions={{
@@ -109,13 +109,13 @@ export default function RootLayout() {
                     </Stack>
                     <Toast />
                   </I18nextProvider>
-                </QueryClientProvider>
-              </GlobalAlertProvider>
-            </BottomSheetProvider>
-          </GestureHandlerRootView>
-          <StatusBar backgroundColor='#000' style={darkMode ? 'light' : 'dark'} />
-        </ThemeProvider>
-      </SQLiteProvider>
+                </GlobalAlertProvider>
+              </BottomSheetProvider>
+            </GestureHandlerRootView>
+            <StatusBar backgroundColor='#000' style={darkMode ? 'light' : 'dark'} />
+          </ThemeProvider>
+        </SQLiteProvider>
+      </QueryClientProvider>
     </Suspense>
   )
 }
