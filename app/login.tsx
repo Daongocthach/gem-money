@@ -19,7 +19,7 @@ import { LoginFormInputs } from '@/types'
 
 export default function Login() {
   const router = useRouter()
-  const { signIn, setActionName } = useStore()
+  const { signIn, setActionName, isLoggedIn } = useStore()
   const {
     control,
     handleSubmit,
@@ -52,7 +52,7 @@ export default function Login() {
 
   const onSubmit = (data: LoginFormInputs) => {
     setActionName('isLoggedIn', true)
-    // router.replace('/')
+    router.replace('/')
     showToast('login_success')
   }
 

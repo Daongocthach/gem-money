@@ -4,12 +4,11 @@ import { useLocalSearchParams, useRouter } from 'expo-router'
 import { View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
-import IMAGES from '@/assets/images'
 import { useTheme } from "@/hooks"
 import ButtonComponent from './button-component'
-import ImageComponent from './image-component'
 import RowComponent from './row-component'
 import TextComponent from './text-component'
+import UserAvatar from './user-avatar'
 
 type DrawerNav = DrawerNavigationProp<any>
 
@@ -31,8 +30,8 @@ const Header = ({ title }: HeaderProps) => {
       style={{
         paddingHorizontal: 12,
         gap: 10,
-        paddingTop: insets.top + 10,
-        paddingBottom: 15,
+        paddingTop: insets.top + 15,
+        paddingBottom: 20,
       }}
     >
       {router.canGoBack() ? (
@@ -55,58 +54,75 @@ const Header = ({ title }: HeaderProps) => {
         </RowComponent>
       )
         : (
-          <ImageComponent
-            source={IMAGES.FINEPRO_LOGO}
-            style={{ width: 40, height: 40, resizeMode: 'contain' }}
+          <UserAvatar
+            avatarSize={45}
+
+
           />
         )}
 
-      {!['notifications', 'profile'].includes(title) && (
-        <RowComponent gap={6}>
-          <View style={{ position: 'relative' }}>
-            <ButtonComponent
-              iconProps={{
-                name: 'Bell',
-                size: 25,
-                color: 'onPrimary'
-              }}
-              backgroundColor='primary'
-              buttonStyle={{ padding: 10, borderRadius: 100 }}
-              onPress={() => router.push('/notifications')}
+      <RowComponent gap={6}>
+        <ButtonComponent
+          outline
+          iconProps={{
+            name: 'CloudCheck',
+            size: 16,
+          }}
+          textProps={{
+            text: 'Synced',
+            size: 10,
+            fontWeight: 'semibold',
+          }}
+          backgroundColor={'primary'}
+          buttonStyle={{
+            paddingVertical: 6,
+            paddingHorizontal: 8,
+            borderRadius: 100,
+          }}
+        />
+        <View style={{ position: 'relative' }}>
+          <ButtonComponent
+            iconProps={{
+              name: 'Bell',
+              size: 25,
+              color: 'icon'
+            }}
+            backgroundColor='cardVariant'
+            buttonStyle={{ padding: 10, borderRadius: 100 }}
+            onPress={() => router.push('/notifications')}
+          />
+
+          <View
+            style={{
+              position: 'absolute',
+              top: 6,
+              right: 9,
+              backgroundColor: colors.error,
+              borderRadius: 10,
+              width: 15,
+              height: 15,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+
+            <TextComponent
+              type='badge'
+              size={7}
+              color='onPrimary'
+              text={'5'}
             />
-
-            <View
-              style={{
-                position: 'absolute',
-                top: 6,
-                right: 9,
-                backgroundColor: colors.error,
-                borderRadius: 10,
-                width: 15,
-                height: 15,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-
-              <TextComponent
-                type='badge'
-                size={7}
-                color='onPrimary'
-                text={'5'}
-              />
-            </View>
           </View>
+        </View>
 
-          {navigation.openDrawer && (
-            <ButtonComponent
-              isIconOnly
-              iconProps={{ name: 'TextAlignEnd', size: 25 }}
-              onPress={() => navigation.openDrawer()}
-            />
-          )}
-        </RowComponent>
-      )}
+        {navigation.openDrawer && (
+          <ButtonComponent
+            isIconOnly
+            iconProps={{ name: 'TextAlignEnd', size: 25 }}
+            onPress={() => navigation.openDrawer()}
+          />
+        )}
+      </RowComponent>
     </RowComponent>
   )
 }

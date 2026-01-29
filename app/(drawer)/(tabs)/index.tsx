@@ -1,58 +1,108 @@
+import { useTranslation } from "react-i18next"
+import { View } from "react-native"
+
 import {
+  ButtonComponent,
+  ColumnComponent,
   Container,
+  FlatListComponent,
+  FloatButton,
+  RowComponent,
   TextComponent
-} from "@/components";
-import { getAllJars, Jar } from '@/database/jar';
-import { useQuery } from '@tanstack/react-query';
-import { useSQLiteContext } from 'expo-sqlite';
-import { ActivityIndicator, FlatList, View } from 'react-native';
+} from "@/components"
+import { useJars } from "@/components/jars/hooks/useJars"
+import JarCard from "@/components/jars/jar-card"
+import { useAppBottomSheet } from "@/contexts/bottom-sheet-provider"
+import { useTheme } from "@/hooks"
+import useStore from "@/store"
+import { Jar } from "@/types"
 
-export default function HomeScreen() {
-  const db = useSQLiteContext();
+export default function JarsScreen() {
+  const { t } = useTranslation()
+  const { userData } = useStore()
+  const { colors } = useTheme()
+  const { openSheet, closeSheet } = useAppBottomSheet()
+  
+  const {
+    jars,
+    totalBalance,
+    isLoading,
+    isError,
+    isRefetching,
+    refetch,
+  } = useJars()
 
-  // Sử dụng React Query để fetch dữ liệu
-  const { data: jars, isLoading } = useQuery({
-    queryKey: ['jars'],
-    queryFn: () => getAllJars(db),
-  });
+  const handleOpenAddTransaction = () => {
+    openSheet(
+      <ColumnComponent gap={20}>
+        <TextComponent 
+          text='add new expense' 
+          type="title1" 
+          fontWeight="bold" 
+        />
+        
+        <View style={{ height: 200, justifyContent: 'center', alignItems: 'center', borderStyle: 'dashed', borderWidth: 1, borderColor: colors.outline, borderRadius: 12 }}>
+           <TextComponent text="Form nhập chi tiêu sẽ ở đây" color="icon" />
+        </View>
 
-  const renderJarItem = ({ item }: { item: Jar }) => (
-    <View style={{ 
-      padding: 16, 
-      marginVertical: 8, 
-      backgroundColor: '#1E1E2D', 
-      borderRadius: 12,
-      flexDirection: 'row',
-      justifyContent: 'space-between'
-    }}>
-      <View>
-        <TextComponent text={item.name} size={18} color="#FFF" />
-        <TextComponent text={`${item.percentage}%`} color="#A0A0A0" />
-      </View>
-      <TextComponent 
-        text={new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.current_balance)} 
-        color="#4CAF50" 
-      />
-    </View>
-  );
+        <ButtonComponent 
+          textProps={{ text: t("confirm") }}
+          backgroundColor={colors.primary}
+          onPress={() => {
+            closeSheet()
+          }}
+        />
+      </ColumnComponent>,
+      ['70%']
+    )
+  }
 
   return (
     <Container>
-      <View style={{ paddingHorizontal: 16, paddingTop: 20 }}>
-        <TextComponent text="Quản lý các hũ" size={24}  />
-        
-        {isLoading ? (
-          <ActivityIndicator size="large" style={{ marginTop: 20 }} />
-        ) : (
-          <FlatList
-            data={jars}
-            keyExtractor={(item) => item.id}
-            renderItem={renderJarItem}
-            contentContainerStyle={{ paddingBottom: 20 }}
-            ListEmptyComponent={<TextComponent text="Chưa có hũ nào được tạo" />}
+      <ColumnComponent gap={20} style={{ paddingTop: 5 }}>
+        <ColumnComponent gap={10}>
+          <TextComponent
+            text={t("good morning") + ", " + (userData?.full_name || '')}
+            type="label"
+            size={15}
           />
-        )}
-      </View>
+          <RowComponent gap={10}>
+            <TextComponent
+              text={t("total left") + ": "}
+              type="display"
+            />
+            <TextComponent
+              text={new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalBalance || 0)}
+              type="display"
+              fontWeight='bold'
+              color='success'
+            />
+          </RowComponent>
+          <TextComponent
+            text={t('safe to spend today based on your limits')}
+            type="caption"
+          />
+        </ColumnComponent>
+
+        <FlatListComponent
+          data={jars}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }: { item: Jar }) => <JarCard {...item} />}
+          onRefresh={refetch}
+          refreshing={isRefetching}
+          isLoading={isLoading}
+          numColumns={2}
+          isError={isError}
+          hasBottomTabBar
+          extraPaddingBottom={20}
+          columnWrapperStyle={{ gap: 10 }}
+        />
+
+        <FloatButton 
+          hasBottomTabBar 
+          onPress={handleOpenAddTransaction} 
+        />
+      </ColumnComponent>
     </Container>
-  );
+  )
 }

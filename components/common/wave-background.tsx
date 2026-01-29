@@ -12,8 +12,8 @@ export default function WaveBackground() {
       <Svg viewBox="0 0 1440 200" width="100%" height="100%">
         <Defs>
           <LinearGradient id="gradient" x1="1%" y1="38%" x2="99%" y2="62%">
-            <Stop offset="5%" stopColor="#818cf8" />
-            <Stop offset="95%" stopColor="#70a1ff" />
+            <Stop offset="5%" stopColor="#10B981" />
+            <Stop offset="95%" stopColor="#3B82F6" />
           </LinearGradient>
         </Defs>
 

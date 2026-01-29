@@ -1,6 +1,6 @@
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs'
 import { BlurView } from 'expo-blur'
-import { TouchableOpacity, View } from 'react-native'
+import { Platform, TouchableOpacity, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import TextComponent from '@/components/common/text-component'
@@ -21,17 +21,20 @@ export default function BottomTabBarComponent({
       style={{
         position: 'absolute',
         bottom: insets.bottom + 10,
+        alignSelf: 'center',
+        minWidth: '60%',
+        maxWidth: '90%',
         borderRadius: 32,
         overflow: 'hidden',
         borderWidth: 2,
-        borderColor: colors.primaryContainer,
+        borderColor: colors.secondaryContainer,
       }}
     >
       <BlurView
-        intensity={30}
+        intensity={Platform.OS === 'ios' ? 50 : 70}
         tint={darkMode ? 'dark' : 'light'}
         experimentalBlurMethod='dimezisBlurView'
-        blurReductionFactor={3}
+        blurReductionFactor={Platform.OS === 'ios' ? 3 : 8}
         style={{
           flexDirection: 'row',
           justifyContent: 'space-around',

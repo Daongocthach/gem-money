@@ -1,4 +1,4 @@
-import { Platform, TouchableOpacity, ViewStyle } from 'react-native'
+import { TouchableOpacity, ViewStyle } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { useTheme } from '@/hooks'
@@ -13,7 +13,7 @@ type FloatButtonProps = {
     onPress?: () => void
 }
 
-export default function FloatButton ({
+export default function FloatButton({
     size = 60,
     style,
     iconProps,
@@ -27,7 +27,7 @@ export default function FloatButton ({
         <TouchableOpacity
             style={[{
                 position: 'absolute',
-                bottom: insets.bottom + (hasBottomTabBar ? 90 : 30),
+                bottom: insets.bottom + (hasBottomTabBar ? 180 : 50),
                 right: 12,
                 width: size,
                 height: size,
@@ -39,13 +39,14 @@ export default function FloatButton ({
                 shadowRadius: 4,
                 alignItems: 'center',
                 justifyContent: 'center',
-                backgroundColor: Platform.OS === 'android' ? colors.cardDisabled : colors.background
+                backgroundColor: colors.primary
             }, style]}
             onPress={onPress}
         >
             <IconComponent
-                name='Plus'
-                size={30}
+                name='Pencil'
+                size={24}
+                color={colors.onPrimary}
                 {...iconProps}
             />
         </TouchableOpacity>

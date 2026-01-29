@@ -109,12 +109,12 @@ export default function FlatListComponent({
             {...(numColumns > 1 && {
                 columnWrapperStyle: [{
                     justifyContent: 'space-between',
-                    gap: 5,
+                    gap: 10,
                 }, columnWrapperStyle],
             })}
             contentContainerStyle={[{
                 paddingHorizontal: 2,
-                gap: 5,
+                gap: 10,
                 paddingBottom: insets.bottom + (hasBottomTabBar ? 150 : 30) + extraPaddingBottom,
             }, contentContainerStyle]}
             {...props}

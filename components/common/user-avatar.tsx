@@ -56,10 +56,12 @@ export default function UserAvatar({
   return (
     <View
       style={{
-        backgroundColor: avatarColor ?? colors.primary,
+        backgroundColor: avatarColor ?? colors.warning,
         width: avatarSize,
         height: avatarSize,
         borderRadius: avatarSize / 2,
+        borderWidth: 2,
+        borderColor: colors.card,
         justifyContent: 'center',
         alignItems: 'center',
       }}
@@ -71,6 +73,19 @@ export default function UserAvatar({
         style={{
           color: '#fff',
           lineHeight: avatarSize * 0.4,
+        }}
+      />
+      <View 
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          right: 0,
+          width: avatarSize * 0.3,
+          height: avatarSize * 0.3,
+          borderRadius: (avatarSize * 0.3) / 2,
+          backgroundColor: colors.success,
+          borderWidth: 2,
+          borderColor: colors.background,
         }}
       />
     </View>

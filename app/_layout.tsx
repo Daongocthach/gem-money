@@ -13,6 +13,7 @@ import Toast from 'react-native-toast-message'
 
 import { LoadingScreen } from '@/components'
 import { FONT_FAMILIES } from '@/constants'
+import { BottomSheetProvider } from '@/contexts/bottom-sheet-provider'
 import { GlobalAlertProvider } from '@/contexts/global-alert-provider'
 import { ThemeProvider } from '@/contexts/theme-provider'
 import { migrateDbIfNeeded } from '@/database/db'
@@ -46,7 +47,7 @@ const authenScreens = [
 ]
 
 export default function RootLayout() {
-  const { darkMode, isLoggedIn } = useStore()
+  const { darkMode } = useStore()
   const router = useRouter()
   const insets = useSafeAreaInsets()
   const [loaded] = useFonts({
@@ -71,18 +72,18 @@ export default function RootLayout() {
       <SQLiteProvider databaseName="gem_money.db" onInit={migrateDbIfNeeded} useSuspense>
         <ThemeProvider>
           <GestureHandlerRootView>
-            <GlobalAlertProvider>
-              <QueryClientProvider client={queryClient}>
-                <I18nextProvider i18n={i18next}>
-                  <Stack
-                    screenOptions={{
-                      animation: 'slide_from_right',
-                      contentStyle: {
-                        backgroundColor: darkMode ? '#0D0A18' : 'FFFFFF',
-                      }
-                    }}
-                  >
-                    <Stack.Protected guard={isLoggedIn}>
+            <BottomSheetProvider>
+              <GlobalAlertProvider>
+                <QueryClientProvider client={queryClient}>
+                  <I18nextProvider i18n={i18next}>
+                    <Stack
+                      screenOptions={{
+                        animation: 'slide_from_right',
+                        contentStyle: {
+                          backgroundColor: darkMode ? '#0D0A18' : 'FFFFFF',
+                        }
+                      }}
+                    >
                       {screens.map((screen) => (
                         <Stack.Screen
                           key={screen}
@@ -91,9 +92,7 @@ export default function RootLayout() {
                             headerShown: false,
                           }} />
                       ))}
-                    </Stack.Protected>
 
-                    <Stack.Protected guard={!isLoggedIn}>
                       {authenScreens.map((screen) => (
                         <Stack.Screen
                           key={screen}
@@ -106,17 +105,17 @@ export default function RootLayout() {
                             }
                           }}
                         />))}
-                    </Stack.Protected>
 
-                  </Stack>
-                  <Toast />
-                </I18nextProvider>
-              </QueryClientProvider>
-            </GlobalAlertProvider>
+                    </Stack>
+                    <Toast />
+                  </I18nextProvider>
+                </QueryClientProvider>
+              </GlobalAlertProvider>
+            </BottomSheetProvider>
           </GestureHandlerRootView>
           <StatusBar backgroundColor='#000' style={darkMode ? 'light' : 'dark'} />
         </ThemeProvider>
-        </SQLiteProvider>
+      </SQLiteProvider>
     </Suspense>
   )
 }
