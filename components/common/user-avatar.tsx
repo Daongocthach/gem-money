@@ -1,14 +1,16 @@
+import ImageComponent from '@/components/common/image-component'
 import { useTheme } from '@/hooks'
 import useStore from '@/store'
 import { getShortName } from '@/utils'
 import React, { createContext, ReactNode, useContext } from 'react'
-import { ColorValue, StyleSheet, TextStyle, View, ViewStyle } from 'react-native'
+import { ColorValue, ImageStyle, StyleSheet, TextStyle, View, ViewStyle } from 'react-native'
 import TextComponent from './text-component'
 
 interface AvatarCtx {
   avatarSize: number
-  displayName: string
+  displayName?: string
   avatarColor?: string
+  avatarUrl?: string
 }
 
 interface AvatarProps {
@@ -17,6 +19,7 @@ interface AvatarProps {
   userName?: string
   isMe?: boolean
   avatarColor?: string
+  avatarUrl?: string
   style?: ViewStyle
 }
 
@@ -35,33 +38,47 @@ function useAvatarCtx() {
 }
 
 function Image() {
-  const { avatarSize, displayName, avatarColor } = useAvatarCtx()
+  const { avatarSize, displayName, avatarColor, avatarUrl } = useAvatarCtx()
   const { colors } = useTheme()
   const shortName = getShortName(displayName)
 
+  const containerStyle: ViewStyle = {
+    width: avatarSize,
+    height: avatarSize,
+    borderRadius: avatarSize / 2,
+    borderColor: colors.card,
+    borderWidth: 2,
+    backgroundColor: (avatarColor as ColorValue) ?? colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+  }
+
+  const imageStyle: ImageStyle = {
+    width: avatarSize,
+    height: avatarSize,
+    borderRadius: avatarSize / 2,
+  }
+
   return (
-    <View
-      style={[
-        styles.placeholder,
-        {
-          backgroundColor: (avatarColor as ColorValue) ?? colors.primary,
-          width: avatarSize,
-          height: avatarSize,
-          borderRadius: avatarSize / 2,
-          borderColor: colors.card,
-        },
-      ]}
-    >
-      <TextComponent
-        text={shortName}
-        type="title1"
-        size={avatarSize * 0.35}
-        style={{ color: '#fff' }}
-      />
+    <View style={containerStyle}>
+      {avatarUrl ? (
+        <ImageComponent 
+          source={{ uri: avatarUrl }} 
+          style={imageStyle} 
+          resizeMode="cover"
+        />
+      ) : (
+        <TextComponent
+          text={shortName}
+          type="title1"
+          size={avatarSize * 0.35}
+          style={{ color: '#fff' }}
+        />
+      )}
     </View>
   )
 }
-
 function Status({ style }: SubComponentProps) {
   const { avatarSize } = useAvatarCtx()
   const { colors } = useTheme()
@@ -88,8 +105,8 @@ function Label({ style }: { style?: TextStyle }) {
   const { displayName } = useAvatarCtx()
   return (
     <TextComponent
-      text={displayName}
-      type="body"
+      text={displayName ?? 'N/A'}
+      type="label"
       style={[{ marginLeft: 8 }, style]}
     />
   )
@@ -101,13 +118,14 @@ function UserAvatar({
   userName = '',
   isMe = false,
   avatarColor,
+  avatarUrl,
   style,
 }: AvatarProps) {
   const { userData } = useStore()
   const displayName = isMe ? userData?.full_name : userName
 
   return (
-    <AvatarCtx.Provider value={{ avatarSize, displayName: displayName ?? '', avatarColor }}>
+    <AvatarCtx.Provider value={{ avatarSize, displayName: displayName ?? '', avatarColor, avatarUrl }}>
       <View style={[styles.container, { height: avatarSize }, style]}>
         {children}
       </View>

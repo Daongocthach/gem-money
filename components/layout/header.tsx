@@ -5,10 +5,10 @@ import { View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { useTheme } from "@/hooks"
-import ButtonComponent from './button-component'
-import RowComponent from './row-component'
-import TextComponent from './text-component'
-import UserAvatar from './user-avatar'
+import ButtonComponent from '../common/button-component'
+import RowComponent from '../common/row-component'
+import TextComponent from '../common/text-component'
+import UserAvatar from '../common/user-avatar'
 
 type DrawerNav = DrawerNavigationProp<any>
 
@@ -54,9 +54,10 @@ const Header = ({ title }: HeaderProps) => {
         </RowComponent>
       )
         : (
-          <UserAvatar
-            avatarSize={45}
-          />
+          <UserAvatar isMe avatarSize={40}>
+            <UserAvatar.Image/>
+            <UserAvatar.Status/>
+          </UserAvatar>
         )}
 
       <RowComponent gap={6}>

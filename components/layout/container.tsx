@@ -3,9 +3,9 @@ import { ScrollView, View, ViewStyle } from 'react-native'
 import Animated, { FadeInRight, FadeOutLeft } from 'react-native-reanimated'
 import { SafeAreaViewProps } from 'react-native-safe-area-context'
 
+import WaveBackground from '@/components/common/wave-background'
 import { useTheme } from '@/hooks'
 import Header from './header'
-import WaveBackground from './wave-background'
 
 interface Props extends SafeAreaViewProps {
   children: ReactNode

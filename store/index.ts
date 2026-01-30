@@ -1,5 +1,4 @@
 import { router } from "expo-router"
-import { Socket } from "socket.io-client"
 import { create } from "zustand"
 import { createJSONStorage, devtools, persist } from "zustand/middleware"
 
@@ -15,12 +14,8 @@ type StoreState = {
   userData: User | null
   accessToken: string
   refreshToken: string
-  isSocketConnected: boolean
-  socket: Socket | null
-  isDevMode: boolean
   signIn: (userData: User) => void
   signOut: (payload: { refresh_token: string }) => void
-  setSocket: (socket: Socket | null) => void
   changeLanguage: (language: LanguageProps) => void
   setDarkMode: (payload: boolean) => void
   setActionName: <key extends keyof StoreState>(key: key, value: StoreState[key]) => void
@@ -57,9 +52,6 @@ const useStore = create<StoreState>()(
           })
           router.replace('/login')
         },
-        setSocket: (socket) => {
-          set({ socket })
-        },
         setDarkMode: (payload) => {
           set({ darkMode: payload })
         },
@@ -81,7 +73,6 @@ const useStore = create<StoreState>()(
           userData: state.userData,
           accessToken: state.accessToken,
           refreshToken: state.refreshToken,
-          isDevMode: state.isDevMode,
         }),
       },
     ),

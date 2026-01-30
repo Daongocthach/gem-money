@@ -4,10 +4,10 @@ import { Drawer } from "expo-router/drawer"
 import { StyleSheet, TouchableOpacity, View } from 'react-native'
 
 import {
-    AvatarLabel,
     DrawerSection,
     Header,
-    TextComponent
+    TextComponent,
+    UserAvatar
 } from "@/components"
 import { VERSION, VERSION_PATCH, } from "@/constants"
 import { useTheme } from "@/hooks"
@@ -37,15 +37,10 @@ const CustomDrawerContent = (props: DrawerContentComponentProps) => {
                     style={[styles.headerContainer, { backgroundColor: colors.cardVariant }]}
                     onPress={() => router.push('/profile')}
                 >
-                    <AvatarLabel
-                        avatarSize={40}
-                        userName={'Guest'}
-                        textProps={{
-                            text: 'Guest',
-                            type: 'title2',
-                            style: { flexShrink: 1 }
-                        }}
-                    />
+                    <UserAvatar userName="Guest" avatarSize={40}>
+                        <UserAvatar.Label />
+                        <UserAvatar.Status />
+                    </UserAvatar>
                 </TouchableOpacity>
 
                 <DrawerSection title='main' items={[...drawerScreens]} />
