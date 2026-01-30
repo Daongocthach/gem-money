@@ -1,5 +1,4 @@
 import { useTheme } from "@/hooks"
-import useStore from '@/store'
 import React, { ReactNode } from 'react'
 import { StyleProp, TouchableOpacity, TouchableOpacityProps, ViewStyle } from 'react-native'
 
@@ -21,7 +20,6 @@ const CardContainer = ({
     isBorder,
     ...rest
 }: CardContainerProps) => {
-    const { darkMode } = useStore()
     const { colors } = useTheme()
 
     return (
