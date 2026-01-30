@@ -1,7 +1,6 @@
 export * from './use-camera-permission'
 export * from './use-countdown'
 export * from './use-debounce'
-export * from './use-file-picker'
 export * from './use-flat-list-scroll-to-top'
 export * from './use-get-color-by-key'
 export * from './use-image-picker'

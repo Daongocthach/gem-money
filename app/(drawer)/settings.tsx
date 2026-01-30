@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Platform } from 'react-native'
 
-import { showAlert, showToast } from '@/alerts'
+import { showAlert } from '@/alerts'
 import {
   ButtonComponent,
   CardContainer,
@@ -18,7 +17,6 @@ import {
   TextInputComponent
 } from '@/components'
 import { VERSION_PATCH } from '@/constants'
-import { useCheckAppUpdate } from '@/hooks/use-check-app-update'
 import useStore from '@/store'
 
 
@@ -38,34 +36,12 @@ export default function SettingsScreen() {
   const [devUrl, setDevUrl] = useState('')
   const [value, onChange] = useState<string[]>(["", "", "", "", "", ""])
 
-  const {
-    hasUpdate,
-    checking,
-    openUpdate,
-  } = useCheckAppUpdate()
-
   const toggleSwitch = () => {
     setDarkMode(!darkMode)
   }
 
   const toggleSwitchDevMode = () => {
     setVisiblePopup(!visiblePopup)
-  }
-
-  const handleDevMode = () => {
-    if (value.join('') === '123456') {
-      if (isDevMode) {
-        setActionName('isDevMode', false)
-        showToast('disable_success')
-        signOut({ refresh_token: refreshToken })
-      } else {
-        setActionName('isDevMode', true)
-        signOut({ refresh_token: refreshToken })
-      }
-      setVisiblePopup(false)
-    } else {
-      showAlert('password_mismatch')
-    }
   }
 
   return (
@@ -89,23 +65,6 @@ export default function SettingsScreen() {
               value={isDevMode}
               onToggle={toggleSwitchDevMode}
               label='dev mode'
-            />
-          }
-
-          {Platform.OS === 'android' &&
-            <ButtonComponent
-              iconProps={{ name: 'CloudDownload', color: hasUpdate ? 'secondary' : 'icon' }}
-              textProps={{
-                text: checking
-                  ? 'checking update'
-                  : hasUpdate
-                    ? t('update available') + ' (v1.0.' + (VERSION_PATCH + 1) + ')'
-                    : 'up to date',
-              }}
-              ghost
-              disabled={!hasUpdate}
-              style={{ alignSelf: 'flex-start' }}
-              onPress={openUpdate}
             />
           }
 
@@ -141,7 +100,7 @@ export default function SettingsScreen() {
           />
           <ButtonComponent
             textProps={{ text: 'submit' }}
-            onPress={handleDevMode}
+            onPress={() => {}}
           />
         </ColumnComponent>
       </PopupComponent>

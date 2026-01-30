@@ -1,6 +1,6 @@
 import { useTheme } from '@/hooks'
 import BottomSheet, { BottomSheetBackdrop, BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet'
-import React, { createContext, useCallback, useContext, useRef, useState } from 'react'
+import React, { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react'
 import { StyleSheet } from 'react-native'
 
 interface BottomSheetContextType {
@@ -16,6 +16,8 @@ export const BottomSheetProvider = ({ children }: { children: React.ReactNode })
   const [content, setContent] = useState<React.ReactNode>(null)
   const [dynamicSnapPoints, setDynamicSnapPoints] = useState<string[]>(['50%'])
   const [isScroll, setIsScroll] = useState<boolean>(false)
+
+  const snapPoints = useMemo(() => dynamicSnapPoints, [dynamicSnapPoints]); 
 
   const openSheet = useCallback((newContent: React.ReactNode, snaps?: string[], scroll?: boolean) => {
     setContent(newContent)
@@ -52,7 +54,7 @@ export const BottomSheetProvider = ({ children }: { children: React.ReactNode })
       <BottomSheet
         ref={bottomSheetRef}
         index={-1}
-        snapPoints={dynamicSnapPoints}
+        snapPoints={snapPoints}
         enablePanDownToClose
         backdropComponent={renderBackdrop}
         backgroundStyle={{ backgroundColor: colors.modal }}

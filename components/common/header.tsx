@@ -64,18 +64,14 @@ const Header = ({ title }: HeaderProps) => {
       <RowComponent gap={6}>
         <ButtonComponent
           outline
-          iconProps={{
-            name: 'CloudCheck',
-            size: 16,
-          }}
           textProps={{
             text: 'Synced',
-            size: 10,
-            fontWeight: 'semibold',
+            size: 8,
+            fontWeight: 'bold',
           }}
-          backgroundColor={'primary'}
+          backgroundColor={'secondary'}
           buttonStyle={{
-            paddingVertical: 6,
+            paddingVertical: 4,
             paddingHorizontal: 8,
             borderRadius: 100,
           }}
