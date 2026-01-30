@@ -17,6 +17,7 @@ import { BottomSheetProvider } from '@/contexts/bottom-sheet-provider'
 import { GlobalAlertProvider } from '@/contexts/global-alert-provider'
 import { ThemeProvider } from '@/contexts/theme-provider'
 import { migrateDbIfNeeded } from '@/database/db'
+import { useTheme } from '@/hooks'
 import i18next from '@/locales'
 import useStore from '@/store'
 
@@ -48,6 +49,7 @@ const authenScreens = [
 
 export default function RootLayout() {
   const { darkMode } = useStore()
+  const {colors} = useTheme()
   const router = useRouter()
   const insets = useSafeAreaInsets()
   const [loaded] = useFonts({
@@ -80,7 +82,7 @@ export default function RootLayout() {
                       screenOptions={{
                         animation: 'slide_from_right',
                         contentStyle: {
-                          backgroundColor: darkMode ? '#0D0A18' : 'FFFFFF',
+                          backgroundColor: colors.background,
                         }
                       }}
                     >
@@ -101,7 +103,7 @@ export default function RootLayout() {
                             headerShown: false,
                             contentStyle: {
                               paddingTop: insets.top,
-                              backgroundColor: darkMode ? '#0D0A18' : 'FFFFFF',
+                              backgroundColor: colors.background,
                             }
                           }}
                         />))}

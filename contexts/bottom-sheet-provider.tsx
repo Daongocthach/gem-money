@@ -14,16 +14,20 @@ export const BottomSheetProvider = ({ children }: { children: React.ReactNode })
   const { colors } = useTheme()
   const bottomSheetRef = useRef<BottomSheet>(null)
   const [content, setContent] = useState<React.ReactNode>(null)
-  const [dynamicSnapPoints, setDynamicSnapPoints] = useState<string[]>(['50%'])
+  const [dynamicSnapPoints, setDynamicSnapPoints] = useState<string[]>(['1%'])
   const [isScroll, setIsScroll] = useState<boolean>(false)
 
-  const snapPoints = useMemo(() => dynamicSnapPoints, [dynamicSnapPoints]); 
+  const snapPoints = useMemo(() => dynamicSnapPoints, [dynamicSnapPoints]);
 
   const openSheet = useCallback((newContent: React.ReactNode, snaps?: string[], scroll?: boolean) => {
+    const finalSnaps = snaps || ['70%']
+    setDynamicSnapPoints(finalSnaps)
     setContent(newContent)
-    if (snaps) setDynamicSnapPoints(snaps)
     if (scroll !== undefined) setIsScroll(scroll)
-    bottomSheetRef.current?.expand()
+
+    requestAnimationFrame(() => {
+      bottomSheetRef.current?.expand()
+    })
   }, [])
 
   const closeSheet = useCallback(() => {
