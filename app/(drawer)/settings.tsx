@@ -9,12 +9,9 @@ import {
   ColumnComponent,
   Container,
   IconComponent,
-  OTPInput,
-  PopupComponent,
   RowComponent,
   SwitchComponent,
-  TextComponent,
-  TextInputComponent
+  TextComponent
 } from '@/components'
 import { VERSION_PATCH } from '@/constants'
 import useStore from '@/store'
@@ -25,25 +22,13 @@ export default function SettingsScreen() {
   const {
     darkMode,
     setDarkMode,
-    isDevMode,
-    setActionName,
-    signOut,
-    refreshToken,
   } = useStore()
 
-  const [visiblePopup, setVisiblePopup] = useState(false)
   const [visibleDevMode, setVisibleDevMode] = useState(false)
-  const [devUrl, setDevUrl] = useState('')
-  const [value, onChange] = useState<string[]>(["", "", "", "", "", ""])
 
   const toggleSwitch = () => {
     setDarkMode(!darkMode)
   }
-
-  const toggleSwitchDevMode = () => {
-    setVisiblePopup(!visiblePopup)
-  }
-
   return (
     <Container isScroll>
       <CardContainer gap={25}>
@@ -59,15 +44,6 @@ export default function SettingsScreen() {
             />
             <IconComponent name={darkMode ? 'Moon' : 'Sun'} />
           </RowComponent>
-
-          {visibleDevMode &&
-            <SwitchComponent
-              value={isDevMode}
-              onToggle={toggleSwitchDevMode}
-              label='dev mode'
-            />
-          }
-
         </ColumnComponent>
       </CardContainer>
       <ButtonComponent
@@ -80,30 +56,6 @@ export default function SettingsScreen() {
         style={{ position: 'absolute', bottom: 20, right: 20 }}
         onPress={() => showAlert('change_company', () => setVisibleDevMode(!visibleDevMode))}
       />
-      <PopupComponent
-        visible={visiblePopup}
-        onClose={() => setVisiblePopup(false)}
-        modalTitle='developer mode'
-        modalDescription='please enter password'
-      >
-        <ColumnComponent gap={20}>
-          <TextInputComponent
-            placeholder='enter developer url'
-            value={devUrl}
-            onChangeText={setDevUrl}
-          />
-          <OTPInput
-            value={value}
-            length={6}
-            onChange={onChange}
-            hideResend
-          />
-          <ButtonComponent
-            textProps={{ text: 'submit' }}
-            onPress={() => {}}
-          />
-        </ColumnComponent>
-      </PopupComponent>
     </Container>
   )
 }

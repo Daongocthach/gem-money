@@ -23,7 +23,6 @@ type TransactionFormValues = {
   type: 'EXPENSE' | 'INCOME' | 'TRANSFER'
 }
 
-// Thêm interface cho Props
 interface AddTransactionFormProps {
   jars: Jar[];
   onSuccess?: () => void;
@@ -33,8 +32,7 @@ export default function AddTransactionForm({ jars, onSuccess }: AddTransactionFo
   const db = useSQLiteContext();
   const queryClient = useQueryClient();
 
-  // Chuyển đổi dữ liệu jars sang format của InlineDropdown
-  const jarOptions = jars.map(j => ({ label: j.name, value: j.id }));
+  const jarOptions = jars.map(jar => ({ label: jar.name, value: jar.id }));
 
   const transactionTypeOptions = [
     { label: 'Chi tiêu (Expense)', value: 'EXPENSE' },
@@ -42,7 +40,15 @@ export default function AddTransactionForm({ jars, onSuccess }: AddTransactionFo
     { label: 'Chuyển khoản (Transfer)', value: 'TRANSFER' },
   ];
 
-  const { control, handleSubmit, watch, formState: { isValid, errors } } = useForm<TransactionFormValues>({
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: {
+      isValid,
+      errors
+    }
+  } = useForm<TransactionFormValues>({
     defaultValues: {
       type: 'EXPENSE',
       date: new Date(),
@@ -67,7 +73,7 @@ export default function AddTransactionForm({ jars, onSuccess }: AddTransactionFo
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['jars'] });
       showToast('add_success');
-      onSuccess?.(); // Gọi hàm đóng sheet từ cha
+      onSuccess?.()
     },
     onError: (error) => {
       console.error(error);
@@ -78,9 +84,9 @@ export default function AddTransactionForm({ jars, onSuccess }: AddTransactionFo
 
   return (
     <ColumnComponent gap={15} style={{ padding: 16 }}>
-       <TextComponent text="Thêm giao dịch mới" type="title" textAlign="center" />
-       
-       <Controller
+      <TextComponent text="Thêm giao dịch mới" type="title" textAlign="center" />
+
+      <Controller
         control={control}
         name="type"
         render={({ field: { value, onChange } }) => (
@@ -123,7 +129,13 @@ export default function AddTransactionForm({ jars, onSuccess }: AddTransactionFo
             value={value}
             onChangeText={onChange}
             errorMessage={errors.amount?.message}
-          />
+          >
+            <TextInputComponent.LeftIcon name="Wallet" />
+
+            <TextInputComponent.RightGroup>
+              <TextInputComponent.Clear />
+            </TextInputComponent.RightGroup>
+          </TextInputComponent>
         )}
       />
 

@@ -169,7 +169,11 @@ export default function MultiSelectDropdown({
                   value={searchCustomValue}
                   onChangeText={setSearchCustomValue}
                   placeholder={t(searchPlaceholder)}
-                />
+                >
+                  <TextInputComponent.RightGroup>
+                    <TextInputComponent.Clear />
+                  </TextInputComponent.RightGroup>
+                </TextInputComponent>
               </View>
             ) : null,
             ListEmptyComponent: hideFooter ? null :

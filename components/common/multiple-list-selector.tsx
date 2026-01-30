@@ -226,7 +226,11 @@ export default function MultipleListSelector({
                   value={searchValue}
                   onChangeText={setSearchValue}
                   placeholder={searchPlaceholder}
-                />
+                >
+                  <TextInputComponent.RightGroup>
+                    <TextInputComponent.Clear />
+                  </TextInputComponent.RightGroup>
+                </TextInputComponent>
               )}
             </ColumnComponent>
           }

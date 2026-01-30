@@ -137,15 +137,23 @@ export default function SingleListSelector({
                                     readOnly
                                     value={selected.label}
                                     placeholder={searchPlaceholder}
-                                    onClear={handleClear}
                                     style={{ backgroundColor: colors.card }}
-                                />
+                                >
+                                    <TextInputComponent.RightGroup>
+                                        <TextInputComponent.Clear />
+                                    </TextInputComponent.RightGroup>
+                                </TextInputComponent>
                             }
+
                             <TextInputComponent
                                 value={searchValue}
                                 onChangeText={setSearchValue}
                                 placeholder={searchPlaceholder}
-                            />
+                            >
+                                <TextInputComponent.RightGroup>
+                                    <TextInputComponent.Clear />
+                                </TextInputComponent.RightGroup>
+                            </TextInputComponent>
                         </ColumnComponent>
                     }
                     stickyHeaderIndices={[0]}

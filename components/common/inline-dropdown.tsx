@@ -198,7 +198,11 @@ export default function InlineDropdown({
                   value={searchCustomValue}
                   onChangeText={setSearchCustomValue}
                   placeholder={t(searchPlaceholder)}
-                />
+                >
+                  <TextInputComponent.RightGroup>
+                    <TextInputComponent.Clear />
+                  </TextInputComponent.RightGroup>
+                </TextInputComponent>
               </View>
             ) : null,
             ListEmptyComponent: hideFooter ? null :

@@ -1,6 +1,3 @@
-import { useRouter } from 'expo-router'
-import { Controller, useForm } from 'react-hook-form'
-
 import {
   ButtonComponent,
   CardContainer,
@@ -11,6 +8,8 @@ import {
   TextComponent,
   TextInputComponent
 } from '@/components'
+import { useRouter } from 'expo-router'
+import { Controller, useForm } from 'react-hook-form'
 
 import { showToast } from '@/alerts'
 import IMAGES from '@/assets/images'
@@ -19,7 +18,7 @@ import { LoginFormInputs } from '@/types'
 
 export default function Login() {
   const router = useRouter()
-  const { signIn, setActionName, isLoggedIn } = useStore()
+  const { setActionName } = useStore()
   const {
     control,
     handleSubmit,
@@ -30,25 +29,6 @@ export default function Login() {
       password: '',
     },
   })
-
-  // const { mutate: login, isPending } = useMutation({
-  //   mutationFn: (data: LoginFormInputs) => authenApi.login(data),
-  //   onSuccess: (response) => {
-  //     showToast('login_success')
-  //     router.replace('/')
-  //   },
-  //   onError: (error: AxiosError<any>) => {
-  //     const res = error.response?.data
-  //     if (!res) return
-
-  //     if (res.data?.is_locked) {
-  //       router.push({
-  //         pathname: '/locked',
-  //         params: res.data,
-  //       })
-  //     }
-  //   }
-  // })
 
   const onSubmit = (data: LoginFormInputs) => {
     setActionName('isLoggedIn', true)
@@ -63,17 +43,22 @@ export default function Login() {
           imageSource={IMAGES.LOGIN_BANNER}
           title="log in to level up your projects"
           caption="unlock tools to manage, collaborate, and excel. Take your projects further — smarter and faster"
-        />
+        >
+          <Overview.Banner />
+          <Overview.Title  />
+          <Overview.Caption />
+        </Overview>
         <CardContainer isBorder style={{ marginTop: 20 }}>
-          <ColumnComponent gap={20}>
-            <ColumnComponent gap={10}>
+          <ColumnComponent gap={24}>
+            <ColumnComponent gap={8}>
               <TextComponent text="sign in" type="title1" />
               <TextComponent
                 text="sign in with your credentials"
                 type="label"
               />
             </ColumnComponent>
-            <ColumnComponent gap={10}>
+
+            <ColumnComponent gap={16}>
               <Controller
                 control={control}
                 name="email"
@@ -86,6 +71,7 @@ export default function Login() {
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInputComponent
+                    label="Email Address"
                     placeholder="enter your email"
                     value={value}
                     onChangeText={onChange}
@@ -93,9 +79,16 @@ export default function Login() {
                     keyboardType="email-address"
                     autoCapitalize="none"
                     errorMessage={errors.email?.message}
-                  />
+                  >
+                    <TextInputComponent.LeftIcon name="Mail" />
+                    <TextInputComponent.RightGroup>
+                      <TextInputComponent.Clear />
+                    </TextInputComponent.RightGroup>
+                  </TextInputComponent>
                 )}
               />
+
+              {/* Password Input */}
               <Controller
                 control={control}
                 name="password"
@@ -108,21 +101,27 @@ export default function Login() {
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInputComponent
+                    label="Password"
                     placeholder="enter your password"
-                    isPassword
+                    secureTextEntry
                     value={value}
                     onChangeText={onChange}
                     onBlur={onBlur}
                     errorMessage={errors.password?.message}
-                  />
+                  >
+                    <TextInputComponent.LeftIcon name="Lock" />
+                    <TextInputComponent.RightGroup>
+                      <TextInputComponent.Clear />
+                      <TextInputComponent.TogglePassword />
+                    </TextInputComponent.RightGroup>
+                  </TextInputComponent>
                 )}
               />
-
             </ColumnComponent>
 
+            {/* Submit Button */}
             <ButtonComponent
               onPress={handleSubmit(onSubmit)}
-              // loading={isPending}
               textProps={{ text: 'sign in' }}
             />
           </ColumnComponent>
