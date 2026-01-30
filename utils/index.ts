@@ -1,8 +1,6 @@
 import { STORE_NAME } from '@/constants'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { addMinutes, parse, setMilliseconds, setSeconds } from 'date-fns'
-import * as FileSystem from 'expo-file-system'
-import * as ImageManipulator from 'expo-image-manipulator'
 import { FileProps } from '../types'
 
 export const getShortName = (fullName: string | undefined) => {
@@ -71,50 +69,6 @@ export function formatPathToTitle(path: string): string {
 
 export function parseTime(timeStr: string): Date {
   return parse(timeStr, 'HH:mm:ss', new Date())
-}
-
-export async function compressUnder(
-  uri: string,
-  targetBytes = 3 * 1024 * 1024,
-  opts?: {
-    initialQuality?: number,
-    minQuality?: number,
-    maxWidth?: number,
-    qualityStep?: number,
-    widthStep?: number
-  }
-) {
-  let quality = opts?.initialQuality ?? 0.8
-  const minQuality = opts?.minQuality ?? 0.3
-  let width = opts?.maxWidth ?? 1600
-  const qStep = opts?.qualityStep ?? 0.1
-  const wStep = opts?.widthStep ?? 0.85
-  let bestUri = uri
-
-  const orig = await FileSystem.getInfoAsync(uri)
-  if (orig.exists && (orig.size ?? Infinity) <= targetBytes) return uri
-
-  for (let i = 0; i < 8; i++) {
-    const actions: ImageManipulator.Action[] = width ? [{ resize: { width: Math.round(width) } }] : []
-    const result = await ImageManipulator.manipulateAsync(
-      bestUri,
-      actions,
-      { compress: quality, format: ImageManipulator.SaveFormat.JPEG }
-    )
-    bestUri = result.uri
-
-    const info = await FileSystem.getInfoAsync(bestUri)
-    if (info.exists && (info.size ?? Infinity) <= targetBytes) break
-
-    if (quality > minQuality + qStep) {
-      quality -= qStep
-    } else if (width > 720) {
-      width = Math.max(720, width * wStep)
-    } else {
-      break
-    }
-  }
-  return bestUri
 }
 
 export const getFileExtension = (file: string) => {

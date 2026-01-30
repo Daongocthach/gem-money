@@ -56,8 +56,6 @@ const Header = ({ title }: HeaderProps) => {
         : (
           <UserAvatar
             avatarSize={45}
-
-
           />
         )}
 
