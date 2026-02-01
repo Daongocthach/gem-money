@@ -1,27 +1,30 @@
+import { useState } from "react"
 import { useTranslation } from "react-i18next"
+import { TextInput } from "react-native"
 
 import {
+  ButtonComponent,
   ColumnComponent,
   Container,
-  DateTimePicker,
   FlatListComponent,
   FloatButton,
   RowComponent,
   TextComponent
 } from "@/components"
-import AddTransactionForm from "@/components/jars/add-transaction-form"
-import { useJars } from "@/components/jars/hooks/useJars"
+import AddJarForm from "@/components/jars/add-jar-form"
+import { useJars } from "@/components/jars/hooks/use-jars"
 import JarCard from "@/components/jars/jar-card"
+import { FONT_FAMILIES } from "@/constants"
 import { useAppBottomSheet } from "@/contexts/bottom-sheet-provider"
 import useStore from "@/store"
 import { Jar } from "@/types"
-import { useState } from "react"
+
 
 export default function JarsScreen() {
   const { t } = useTranslation()
   const { userData } = useStore()
   const { openSheet, closeSheet } = useAppBottomSheet()
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
+  const [balance, setBalance] = useState(0)
 
   const {
     jars,
@@ -32,25 +35,19 @@ export default function JarsScreen() {
     refetch,
   } = useJars()
 
-  const handleOpenAddTransaction = () => {
+
+  const handleOpenAddJar = () => {
     openSheet(
-      <AddTransactionForm
-        jars={jars || []}
-        onSuccess={() => closeSheet()}
-      />
-      , ['70%'], true
+      <AddJarForm onSuccess={() => closeSheet()} />,
+      ['0%'],
+      true
     )
   }
 
   return (
     <Container>
       <ColumnComponent gap={20} style={{ paddingTop: 5 }}>
-        <ColumnComponent gap={10}>
-          <DateTimePicker
-            mode="date"
-            dateTime={selectedDate}
-            setDateTime={setSelectedDate}
-          />
+        <ColumnComponent gap={5}>
           <TextComponent
             text={t("good morning") + ", " + (userData?.full_name || '')}
             type="label"
@@ -66,6 +63,23 @@ export default function JarsScreen() {
               type="display"
               fontWeight='bold'
               color='success'
+            />
+            <TextInput
+              keyboardType="numeric"
+              value={balance.toString()}
+              onChangeText={(text) => setBalance(Number(text))}
+              style={{
+                fontFamily: FONT_FAMILIES.SEMIBOLD,
+                fontSize: 18,
+                textAlignVertical: 'center',
+
+              }}
+            />
+            <ButtonComponent
+              isIconOnly
+              iconProps={{
+                name: "Pencil",
+              }}
             />
           </RowComponent>
           <TextComponent
@@ -84,13 +98,13 @@ export default function JarsScreen() {
           numColumns={2}
           isError={isError}
           hasBottomTabBar
-          extraPaddingBottom={20}
+          extraPaddingBottom={50}
           columnWrapperStyle={{ gap: 10 }}
         />
 
         <FloatButton
           hasBottomTabBar
-          onPress={handleOpenAddTransaction}
+          onPress={handleOpenAddJar}
         />
       </ColumnComponent>
     </Container>

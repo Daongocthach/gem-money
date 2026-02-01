@@ -6,6 +6,7 @@ export type Jar = {
   name: string
   percentage: number
   current_balance: number
+  target_balance: number
   color: string
   icon: string
   is_active: number

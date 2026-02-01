@@ -82,7 +82,7 @@ const TogglePasswordButton = () => {
 interface MainProps extends TextInputProps {
   label?: string
   errorMessage?: string
-  children: ReactNode
+  children?: ReactNode
   containerStyle?: ViewStyle
 }
 

@@ -1,5 +1,3 @@
-import { useRouter } from 'expo-router'
-import { useTranslation } from 'react-i18next'
 
 import CardContainer from '@/components/common/card-container'
 import ChipComponent from '@/components/common/chip-component'
@@ -13,8 +11,6 @@ import { useTheme } from '@/hooks'
 import { Jar } from '@/types'
 
 export default function JarCard(jar: Jar) {
-    const router = useRouter()
-    const { t } = useTranslation()
     const { colors } = useTheme()
 
     if (!jar) return null
@@ -22,10 +18,10 @@ export default function JarCard(jar: Jar) {
     const {
         name,
         percentage,
-        current_balance,
+        current_balance = 0,
+        target_balance,
         color,
         icon,
-        updated_at
     } = jar
 
     const formattedBalance = new Intl.NumberFormat('vi-VN', {
@@ -34,6 +30,7 @@ export default function JarCard(jar: Jar) {
     }).format(current_balance)
 
     const handleRouting = () => {
+
     }
 
     return (
@@ -72,12 +69,15 @@ export default function JarCard(jar: Jar) {
                 <ColumnComponent gap={8}>
                     <RowComponent justify='space-between'>
                         <TextComponent
-                            text={t('100k/125k')}
+                            text={current_balance?.toString() +
+                                'k / ' +
+                                target_balance?.toString() +
+                                'k'}
                             type='label'
                             size={11}
                         />
                         <TextComponent
-                            text={percentage.toString() + '%' }
+                            text={percentage.toString() + '%'}
                             type='label'
                             size={11}
                         />
