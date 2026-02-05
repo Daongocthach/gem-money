@@ -1,7 +1,7 @@
 import * as SQLite from 'expo-sqlite';
 
 export async function migrateDbIfNeeded(db: SQLite.SQLiteDatabase) {
-  const DATABASE_VERSION = 2
+  const DATABASE_VERSION = 1
 
   let result = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version')
   let currentDbVersion = result?.user_version ?? 0
@@ -73,13 +73,6 @@ export async function migrateDbIfNeeded(db: SQLite.SQLiteDatabase) {
     currentDbVersion = 1;
   }
 
-  if (currentDbVersion === 1) {
-    console.log("--- ĐANG THÊM BẢNG BUDGETS CHO NGƯỜI DÙNG CŨ ---");
-    await db.execAsync(`
-     
-    `);
-    currentDbVersion = 2;
-  }
 
   await db.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);
   console.log("--- ĐÃ CẬP NHẬT LÊN VERSION:", DATABASE_VERSION);

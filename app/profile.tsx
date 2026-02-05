@@ -1,12 +1,12 @@
 import {
-    Container,
-    TextComponent
+  Container,
+  TextComponent
 } from "@/components"
 
 export default function ProfileScreen() {
 
   return (
-    <Container>
+    <Container headerTitle="profile">
       <TextComponent text="Profile" />
     </Container>
   )

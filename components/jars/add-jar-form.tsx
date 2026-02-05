@@ -1,15 +1,16 @@
-import { showToast } from '@/alerts';
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import * as Crypto from 'expo-crypto'
+import { useSQLiteContext } from 'expo-sqlite'
+import { Controller, useForm } from 'react-hook-form'
+
+import { showToast } from '@/alerts'
 import {
-    ButtonComponent,
-    ColumnComponent,
-    TextComponent,
-    TextInputComponent
-} from '@/components';
-import { JarsQuery } from '@/database'; // Đảm bảo đúng path
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import * as Crypto from 'expo-crypto';
-import { useSQLiteContext } from 'expo-sqlite';
-import { Controller, useForm } from 'react-hook-form';
+  ButtonComponent,
+  ColumnComponent,
+  TextComponent,
+  TextInputComponent
+} from '@/components'
+import { JarsQuery } from '@/database'
 
 type JarFormValues = {
   name: string
@@ -18,12 +19,12 @@ type JarFormValues = {
 }
 
 interface AddJarFormProps {
-  onSuccess?: () => void;
+  onSuccess?: () => void
 }
 
 export default function AddJarForm({ onSuccess }: AddJarFormProps) {
-  const db = useSQLiteContext();
-  const queryClient = useQueryClient();
+  const db = useSQLiteContext()
+  const queryClient = useQueryClient()
 
   const { control, handleSubmit, formState: { isValid, errors } } = useForm<JarFormValues>({
     defaultValues: {
@@ -31,7 +32,7 @@ export default function AddJarForm({ onSuccess }: AddJarFormProps) {
       percentage: '',
       color: '#4CAF50',
     },
-  });
+  })
 
   const { mutate: createJar, isPending } = useMutation({
     mutationFn: async (data: JarFormValues) => {
@@ -40,15 +41,15 @@ export default function AddJarForm({ onSuccess }: AddJarFormProps) {
         name: data.name,
         percentage: parseFloat(data.percentage),
         color: data.color,
-      });
+      })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['jars'] });
-      showToast('add_success');
-      onSuccess?.();
+      queryClient.invalidateQueries({ queryKey: ['jars'] })
+      showToast('add_success')
+      onSuccess?.()
     },
     onError: (error) => console.error(error)
-  });
+  })
 
   return (
     <ColumnComponent gap={15} style={{ padding: 16 }}>
@@ -95,5 +96,5 @@ export default function AddJarForm({ onSuccess }: AddJarFormProps) {
         loading={isPending}
       />
     </ColumnComponent>
-  );
+  )
 }

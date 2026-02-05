@@ -1,4 +1,5 @@
 // @/database/queries/index.ts
+export * from './incomes.query';
 export * from './jars.query';
-export * from './monthly-income.query';
-export * from './transaction.query';
+export * from './transactions.query';
+

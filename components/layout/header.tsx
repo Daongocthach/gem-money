@@ -38,10 +38,14 @@ const Header = ({ title }: HeaderProps) => {
         <RowComponent gap={10} style={{ flexShrink: 1 }}>
           <ButtonComponent
             onPress={() => router.back()}
-            iconProps={{ name: 'ArrowLeft', size: 25 }}
-            backgroundColor='primary'
+            iconProps={{
+              name: 'ArrowLeft',
+              size: 25,
+              color: 'icon'
+            }}
+            backgroundColor='cardDisabled'
             buttonStyle={{
-              padding: 10,
+              padding: 5,
               borderRadius: 100,
             }}
           />
@@ -54,9 +58,9 @@ const Header = ({ title }: HeaderProps) => {
         </RowComponent>
       )
         : (
-          <UserAvatar isMe avatarSize={40}>
-            <UserAvatar.Image/>
-            <UserAvatar.Status/>
+          <UserAvatar isMe avatarSize={45}>
+            <UserAvatar.Image />
+            <UserAvatar.Status />
           </UserAvatar>
         )}
 

@@ -39,8 +39,10 @@ const queryClient = new QueryClient({
 SplashScreen.preventAutoHideAsync()
 
 const screens = [
-  '(drawer)',
+  '(tabs)',
   'no-access',
+  'profile',
+  'notifications'
 ]
 
 const authenScreens = [

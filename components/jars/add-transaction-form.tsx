@@ -9,7 +9,7 @@ import {
   TextComponent,
   TextInputComponent
 } from '@/components'
-import { TransactionsQuery } from '@/database/transaction.query'
+import { TransactionsQuery } from '@/database/transactions.query'
 import { Jar } from '@/types'
 import * as Crypto from 'expo-crypto'
 import { useSQLiteContext } from 'expo-sqlite'

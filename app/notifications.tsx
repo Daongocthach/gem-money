@@ -1,12 +1,12 @@
 import {
-    Container,
-    TextComponent
+  Container,
+  TextComponent
 } from "@/components"
 
 export default function NotificationsScreen() {
 
   return (
-    <Container>
+    <Container headerTitle="notifications">
       <TextComponent text="Notifications" />
     </Container>
   )

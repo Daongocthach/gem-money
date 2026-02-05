@@ -17,6 +17,11 @@ export default function TabLayout() {
       title: 'history',
       icon: 'ChartBar' as const,
     },
+    {
+      name: 'settings',
+      title: 'settings',
+      icon: 'Cog' as const,
+    }
   ]
 
   return (

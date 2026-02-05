@@ -1,6 +1,5 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
-import { TextInput } from "react-native"
 
 import {
   ButtonComponent,
@@ -11,10 +10,10 @@ import {
   RowComponent,
   TextComponent
 } from "@/components"
+import AddIncomeForm from "@/components/jars/add-income"
 import AddJarForm from "@/components/jars/add-jar-form"
 import { useJars } from "@/components/jars/hooks/use-jars"
 import JarCard from "@/components/jars/jar-card"
-import { FONT_FAMILIES } from "@/constants"
 import { useAppBottomSheet } from "@/contexts/bottom-sheet-provider"
 import useStore from "@/store"
 import { Jar } from "@/types"
@@ -39,7 +38,15 @@ export default function JarsScreen() {
   const handleOpenAddJar = () => {
     openSheet(
       <AddJarForm onSuccess={() => closeSheet()} />,
-      ['0%'],
+      ['70%'],
+      true
+    )
+  }
+
+  const handleOpenAddIncome = () => {
+    openSheet(
+      <AddIncomeForm onSuccess={() => closeSheet()} />,
+      ['70%'],
       true
     )
   }
@@ -64,22 +71,13 @@ export default function JarsScreen() {
               fontWeight='bold'
               color='success'
             />
-            <TextInput
-              keyboardType="numeric"
-              value={balance.toString()}
-              onChangeText={(text) => setBalance(Number(text))}
-              style={{
-                fontFamily: FONT_FAMILIES.SEMIBOLD,
-                fontSize: 18,
-                textAlignVertical: 'center',
-
-              }}
-            />
             <ButtonComponent
               isIconOnly
               iconProps={{
-                name: "Pencil",
+                name: "CirclePlus",
+                color: 'primary',
               }}
+              onPress={handleOpenAddIncome}
             />
           </RowComponent>
           <TextComponent

@@ -1,6 +1,6 @@
 import { SQLiteDatabase } from "expo-sqlite"
 
-export const MonthlyIncomesQuery = {
+export const IncomesQuery = {
   getAll: async (db: SQLiteDatabase) => {
     return await db.getAllAsync('SELECT * FROM monthly_incomes WHERE is_deleted = 0 ORDER BY date DESC')
   },
@@ -10,6 +10,14 @@ export const MonthlyIncomesQuery = {
     return await db.runAsync(
       'INSERT INTO monthly_incomes (id, amount, date, note, updated_at) VALUES (?, ?, ?, ?, ?)',
       [income.id, income.amount, now, income.note, now]
+    )
+  },
+
+  update: async (db: SQLiteDatabase, income: { id: string, amount: number, note: string }) => {
+    const now = Date.now()
+    return await db.runAsync(
+      'UPDATE incomes SET amount = ?, note = ?, updated_at = ? WHERE id = ?',
+      [income.amount, income.note, now, income.id]
     )
   },
 
