@@ -1,22 +1,47 @@
 import * as SQLite from 'expo-sqlite';
 
-export async function migrateDbIfNeeded(db: SQLite.SQLiteDatabase) {
-  const DATABASE_VERSION = 1
+async function hardResetDatabase(db: SQLite.SQLiteDatabase) {
+  console.log("--- 🚨 ĐANG XÓA SẠCH DATABASE ĐỂ RESET... 🚨 ---");
+  
+  await db.execAsync('PRAGMA foreign_keys = OFF;');
 
-  let result = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version')
-  let currentDbVersion = result?.user_version ?? 0
+  const tables = await db.getAllAsync<{ name: string }>(
+    "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';"
+  );
+
+  for (const table of tables) {
+    await db.execAsync(`DROP TABLE IF EXISTS ${table.name};`);
+    console.log(`--- Đã xóa bảng: ${table.name}`);
+  }
+
+  // Quan trọng: Reset version về 0
+  await db.execAsync('PRAGMA user_version = 0;');
+  await db.execAsync('PRAGMA foreign_keys = ON;');
+  
+  console.log("--- ✅ ĐÃ RESET XONG ---");
+}
+
+export async function migrateDbIfNeeded(db: SQLite.SQLiteDatabase) {
+  // LƯU Ý: Chỉ bật dòng này khi bạn thực sự muốn xóa sạch dữ liệu để làm lại từ đầu
+  // await hardResetDatabase(db);
+  const DATABASE_VERSION = 1;
+
+  // Đọc lại version sau khi reset
+  let result = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
+  let currentDbVersion = result?.user_version ?? 0;
 
   console.log("--- DB VERSION HIỆN TẠI:", currentDbVersion);
-  console.log("--- MỤC TIÊU LÊN VERSION:", DATABASE_VERSION);
 
-  if (currentDbVersion >= DATABASE_VERSION) return
+  if (currentDbVersion >= DATABASE_VERSION) return;
 
   if (currentDbVersion === 0) {
     console.log("--- ĐANG KHỞI TẠO DATABASE LẦN ĐẦU...");
-    await db.execAsync(`
-      PRAGMA journal_mode = 'wal';
-      PRAGMA foreign_keys = ON;
 
+    // Tách PRAGMA ra khỏi chuỗi CREATE TABLE
+    await db.execAsync("PRAGMA journal_mode = 'wal';");
+    await db.execAsync("PRAGMA foreign_keys = ON;");
+
+    await db.execAsync(`
       CREATE TABLE IF NOT EXISTS jars (
         id TEXT PRIMARY KEY NOT NULL,
         name TEXT NOT NULL,
@@ -29,7 +54,8 @@ export async function migrateDbIfNeeded(db: SQLite.SQLiteDatabase) {
         sync_status TEXT DEFAULT 'pending',
         updated_at INTEGER
       );
-      CREATE TABLE IF NOT EXISTS monthly_incomes (
+
+      CREATE TABLE IF NOT EXISTS incomes (
         id TEXT PRIMARY KEY NOT NULL,
         amount REAL NOT NULL,
         date INTEGER NOT NULL,
@@ -46,7 +72,6 @@ export async function migrateDbIfNeeded(db: SQLite.SQLiteDatabase) {
         amount REAL NOT NULL,
         note TEXT,
         date INTEGER NOT NULL,
-        type TEXT DEFAULT 'EXPENSE', -- EXPENSE, INCOME, TRANSFER
         is_deleted INTEGER DEFAULT 0,
         sync_status TEXT DEFAULT 'pending',
         updated_at INTEGER,
@@ -69,11 +94,11 @@ export async function migrateDbIfNeeded(db: SQLite.SQLiteDatabase) {
         jar
       );
     }
-
+    
     currentDbVersion = 1;
   }
 
-
+  // Cập nhật version lên mục tiêu
   await db.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);
-  console.log("--- ĐÃ CẬP NHẬT LÊN VERSION:", DATABASE_VERSION);
+  console.log("--- HOÀN TẤT: DATABASE ĐANG Ở VERSION", DATABASE_VERSION);
 }

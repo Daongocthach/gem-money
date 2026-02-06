@@ -29,7 +29,7 @@ export default function ImagesPreview({ images, setImages }: ImagesPreviewProps)
             style={{
               width: 50,
               height: 50,
-              borderRadius: 8,
+              borderRadius: 16,
               marginRight: 8,
             }}
             isShowViewer

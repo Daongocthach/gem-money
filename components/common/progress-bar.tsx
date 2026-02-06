@@ -22,13 +22,13 @@ export default function ProgressBar({
     }).start()
 
     return (
-        <View style={{ height, backgroundColor, borderRadius: 8, overflow: 'hidden' }}>
+        <View style={{ height, backgroundColor, borderRadius: 16, overflow: 'hidden' }}>
             <Animated.View
                 style={[
                     {
                         height,
                         backgroundColor: progressColor,
-                        borderRadius: 8,
+                        borderRadius: 16,
                         width: widthAnim.interpolate({
                             inputRange: [0, 1],
                             outputRange: ['0%', '100%'],

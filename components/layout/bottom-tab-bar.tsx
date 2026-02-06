@@ -27,7 +27,7 @@ export default function BottomTabBarComponent({
         borderRadius: 32,
         overflow: 'hidden',
         borderWidth: 2,
-        borderColor: colors.secondaryContainer,
+        borderColor: colors.primaryContainer,
       }}
     >
       <BlurView

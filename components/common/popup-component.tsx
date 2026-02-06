@@ -67,99 +67,109 @@ const PopupComponent = ({
 
 
   return (
-      <Modal
-        visible={visible}
-        animationType="fade"
-        transparent={true}
-      >
-        <Pressable onPress={onClose} style={{
-          flex: 1,
-          backgroundColor: '#11111188',
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: "100%",
-          height: "100%",
-        }}>
-          <ColumnComponent style={{
-            backgroundColor: modalColor || colors.modal,
-            borderRadius: 8,
-            width: '90%',
-            maxWidth: 500,
-            padding: 12,
-            minHeight: isFullHeight ? windowHeight * 0.8 : undefined,
-            maxHeight: windowHeight * 0.8,
-            alignSelf: 'center',
-            overflow: 'hidden',
-            zIndex: 100,
-          }} gap={10}>
-            <ButtonComponent
-              onPress={onClose}
-              iconProps={{ name: 'X', size: 20 }}
-              style={{ alignSelf: 'flex-end' }}
-              ghost
+    <Modal
+      visible={visible}
+      animationType="fade"
+      transparent={true}
+    >
+      <Pressable onPress={onClose} style={{
+        flex: 1,
+        backgroundColor: '#11111188',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: "100%",
+        height: "100%",
+      }}>
+        <ColumnComponent style={{
+          backgroundColor: modalColor || colors.modal,
+          borderRadius: 16,
+          width: '90%',
+          maxWidth: 500,
+          padding: 12,
+          minHeight: isFullHeight ? windowHeight * 0.8 : undefined,
+          maxHeight: windowHeight * 0.8,
+          alignSelf: 'center',
+          overflow: 'hidden',
+          zIndex: 100,
+        }} gap={10}>
+          <ButtonComponent
+            onPress={onClose}
+            iconProps={{ name: 'X', size: 20 }}
+            style={{ alignSelf: 'flex-end' }}
+            ghost
+          />
+
+          {modalTitle && (
+            <TextComponent
+              text={modalTitle}
+              textAlign="center"
+              type="title"
+              color={titleColor || "primary"}
+              numberOfLines={2}
             />
+          )}
+          {modalDescription && (
+            <TextComponent
+              type="body"
+              textAlign="center"
+              text={modalDescription}
+              color={descriptionColor}
+              numberOfLines={20}
+            />
+          )}
+          {isScroll
+            ? <ScrollView>
+              {children}
+            </ScrollView>
+            : <View>
+              {children}
+            </View>
+          }
 
-            {modalTitle && (
-              <TextComponent
-                text={modalTitle}
-                textAlign="center"
-                type="title"
-                color={titleColor || "primary"}
-                numberOfLines={2}
-              />
-            )}
-            {modalDescription && (
-              <TextComponent
-                type="body"
-                textAlign="center"
-                text={modalDescription}
-                color={descriptionColor}
-                numberOfLines={20}
-              />
-            )}
-            {isScroll
-              ? <ScrollView>
-                {children}
-              </ScrollView>
-              : <View>
-                {children}
-              </View>
-            }
-
-            {isLoading ? (
-              <ActivityIndicator size="large" color={buttonColor} />
-            ) : (
-              <>
-                {isOnlyConfirmButton && (
+          {isLoading ? (
+            <ActivityIndicator size="large" color={buttonColor} />
+          ) : (
+            <>
+              {isOnlyConfirmButton && (
+                <ButtonComponent
+                  backgroundColor={buttonColor}
+                  onPress={handleConfirm}
+                  textProps={{ text: buttonTitle || "confirm" }}
+                  disabled={disabled}
+                />
+              )}
+              {isYesCancelButton && (
+                <RowComponent gap={10} style={{ marginVertical: 15 }}>
                   <ButtonComponent
+                    isIconOnly
+                    textProps={{ 
+                      text: "cancel", 
+                      color: 'onCardDisabled',
+                      type: 'title2'
+                    }}
+                    onPress={onClose}
+                    backgroundColor='cardDisabled'
+                    style={{ flex: 1 }}
+                  />
+                  <ButtonComponent
+                    isIconOnly
                     backgroundColor={buttonColor}
                     onPress={handleConfirm}
-                    textProps={{ text: buttonTitle || "confirm" }}
+                    textProps={{ 
+                      text: buttonTitle || "confirm",
+                      color: 'primary',
+                      type: 'title2'
+                    }}
                     disabled={disabled}
+                    style={{ flex: 1 }}
                   />
-                )}
-                {isYesCancelButton && (
-                  <RowComponent gap={10}>
-                    <ButtonComponent
-                      textProps={{ text: "cancel", color: 'onCardDisabled' }}
-                      onPress={onClose}
-                      backgroundColor='cardDisabled'
-                      style={{ flex: 1 }}
-                    />
-                    <ButtonComponent
-                      backgroundColor={buttonColor}
-                      onPress={handleConfirm}
-                      textProps={{ text: buttonTitle || "confirm" }}
-                      disabled={disabled}
-                      style={{ flex: 1 }}
-                    />
-                  </RowComponent>
-                )}
-              </>
-            )}
-          </ColumnComponent>
-        </Pressable>
-      </Modal>
+                </RowComponent>
+              )}
+            </>
+          )}
+        </ColumnComponent>
+      </Pressable>
+    </Modal>
   )
 }
 

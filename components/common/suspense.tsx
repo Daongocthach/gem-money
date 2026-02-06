@@ -42,7 +42,7 @@ export default function Suspense({
                             width: '100%',
                             height: height,
                             backgroundColor: colors.cardDisabled,
-                            borderRadius: 8,
+                            borderRadius: 16,
                             alignSelf: 'stretch',
                         }}
                     />

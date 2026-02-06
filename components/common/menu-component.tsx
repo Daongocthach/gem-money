@@ -66,7 +66,7 @@ const MenuComponent = ({
             flexGrow: 0,
             backgroundColor: colors.background,
             padding: 12,  
-            borderRadius: 8,
+            borderRadius: 16,
             borderWidth: 1,
             borderColor: colors.outline,
           }}

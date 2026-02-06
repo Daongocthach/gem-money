@@ -1,8 +1,8 @@
-import { windowWidth } from "@/constants"
-import { useTheme } from "@/hooks"
-import React, { useEffect, useState } from "react"
-import { StyleSheet, View } from "react-native"
-import { Picker } from "react-native-wheel-pick"
+import { windowWidth } from "@/constants";
+import { useTheme } from "@/hooks";
+import React, { useMemo, useState } from "react";
+import { StyleSheet, View } from "react-native";
+import WheelPickerExpo from 'react-native-wheel-picker-expo';
 
 interface TimePickerProps {
   value: Date
@@ -15,13 +15,9 @@ interface TimePickerProps {
   maxTime?: Date
 }
 
-const buildMinutes = (step: number) =>
-  Array.from({ length: 60 / step }, (_, index) => String(index * step))
-
 export default function AndroidTimePicker({
   value,
   onChange,
-  textSize = 16,
   width = windowWidth,
   minuteStep = 1,
   showSeconds = true,
@@ -30,107 +26,74 @@ export default function AndroidTimePicker({
 }: TimePickerProps) {
   const { colors } = useTheme()
 
-  const snapMinute = (minute: number) =>
-    Math.round(minute / minuteStep) * minuteStep
-
-  const minHour = minTime?.getHours()
-  const maxHour = maxTime?.getHours()
-  const minMinute = minTime?.getMinutes() ?? 0
-  const maxMinute = maxTime?.getMinutes() ?? 59
-
-  const hours = Array.from({ length: 24 }, (_, index) => index)
-    .filter(hour => (minHour == null || hour >= minHour) && (maxHour == null || hour <= maxHour))
-    .map(String)
-
-  const minutes = buildMinutes(minuteStep)
-
-  const seconds = Array.from({ length: 60 }, (_, i) => String(i))
+  const snapMinute = (minute: number) => Math.round(minute / minuteStep) * minuteStep
 
   const [hour, setHour] = useState(value.getHours())
-  const [minute, setMinute] = useState(
-    snapMinute(value.getMinutes())
-  )
+  const [minute, setMinute] = useState(snapMinute(value.getMinutes()))
   const [second, setSecond] = useState(value.getSeconds())
 
-  useEffect(() => {
-    if (!minTime) return
+  const hoursData = useMemo(() => {
+    const minHour = minTime?.getHours() ?? 0
+    const maxHour = maxTime?.getHours() ?? 23
+    return Array.from({ length: 24 }, (_, i) => i)
+      .filter(h => h >= minHour && h <= maxHour)
+      .map(h => ({ label: h < 10 ? `0${h}` : `${h}`, value: h }))
+  }, [minTime, maxTime])
 
-    const selected = new Date(value)
-    if (selected < minTime) {
-      const h = minTime.getHours()
-      const m = snapMinute(minTime.getMinutes())
+  const minutesData = useMemo(() => {
+    return Array.from({ length: 60 / minuteStep }, (_, i) => {
+      const m = i * minuteStep
+      return { label: m < 10 ? `0${m}` : `${m}`, value: m }
+    })
+  }, [minuteStep])
 
-      setHour(h)
-      setMinute(m)
-      setSecond(0)
-      emit(h, m, 0)
-    }
-  }, [minTime])
+  const secondsData = useMemo(() => {
+    return Array.from({ length: 60 }, (_, i) => ({ label: i < 10 ? `0${i}` : `${i}`, value: i }))
+  }, [])
 
   const emit = (h: number, m: number, s: number) => {
     onChange?.({ hour: h, minute: m, second: s })
   }
 
   return (
-    <View style={[styles.row, { width }]}>
-
-      <Picker
-        style={[styles.picker, { backgroundColor: colors.background }]}
-        pickerData={hours}
-        selectedValue={String(hour)}
-        textSize={textSize}
-        textColor={colors.icon}
-        selectTextColor={colors.onBackground}
-        selectBackgroundColor="#8080801A"
-        isShowSelectLine={false}
-        isCyclic={false}
-        onValueChange={(v: string) => {
-          const h = Number(v)
-          setHour(h)
-
-          if (minTime && h === minHour && minute < minMinute) {
-            const m = snapMinute(minMinute)
-            setMinute(m)
-            emit(h, m, second)
-            return
-          }
-
-          emit(h, minute, second)
+    <View style={[styles.row, { width, backgroundColor: colors.background }]}>
+      <WheelPickerExpo
+        height={200}
+        width={width / (showSeconds ? 3.5 : 2.5)}
+        initialSelectedIndex={hoursData.findIndex(h => h.value === hour)}
+        items={hoursData}
+        backgroundColor={colors.background}
+        selectedStyle={{ borderColor: colors.primary }}
+        onChange={({ item }) => {
+          setHour(item.value)
+          emit(item.value, minute, second)
         }}
       />
 
-      <Picker
-        style={[styles.picker, { backgroundColor: colors.background }]}
-        pickerData={minutes}
-        selectedValue={String(minute)}
-        textSize={textSize}
-        textColor={colors.icon}
-        selectTextColor={colors.onBackground}
-        selectBackgroundColor="#8080801A"
-        isShowSelectLine={false}
-        isCyclic={false}
-        onValueChange={(v: string) => {
-          const m = Number(v)
-          setMinute(m)
-          emit(hour, m, second)
+      <WheelPickerExpo
+        height={200}
+        width={width / (showSeconds ? 3.5 : 2.5)}
+        initialSelectedIndex={minutesData.findIndex(m => m.value === minute)}
+        items={minutesData}
+        backgroundColor={colors.background}
+        selectedStyle={{ borderColor: colors.primary }}
+        onChange={({ item }) => {
+          setMinute(item.value)
+          emit(hour, item.value, second)
         }}
       />
 
       {showSeconds && (
-        <Picker
-          style={[styles.picker, { backgroundColor: colors.background }]}
-          pickerData={seconds}
-          selectedValue={String(second)}
-          textSize={textSize}
-          textColor={colors.icon}
-          selectTextColor={colors.onBackground}
-          selectBackgroundColor="#8080801A"
-          isShowSelectLine={false}
-          isCyclic
-          onValueChange={(v: string) => {
-            const s = Number(v)
-            setSecond(s)
-            emit(hour, minute, s)
+        <WheelPickerExpo
+          height={200}
+          width={width / 3.5}
+          initialSelectedIndex={secondsData.findIndex(s => s.value === second)}
+          items={secondsData}
+          backgroundColor={colors.background}
+          selectedStyle={{ borderColor: colors.primary }}
+          onChange={({ item }) => {
+            setSecond(item.value)
+            emit(hour, minute, item.value)
           }}
         />
       )}
@@ -138,17 +101,12 @@ export default function AndroidTimePicker({
   )
 }
 
-
-
 const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
-    height: 200,
+    height: 220,
     alignItems: "center",
     justifyContent: "center",
-  },
-  picker: {
-    flexGrow: 1,
-    height: 200,
-  },
+    alignSelf: 'center'
+  }
 })

@@ -86,3 +86,6 @@ export type TableColumn<T = any> = {
   numberOfLines?: number
   render?: (value: any, row: T) => React.ReactNode
 }
+
+
+export type SyncStatus = 'pending' | 'synced' | 'error'

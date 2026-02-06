@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { useTranslation } from "react-i18next"
 
 import {
@@ -6,24 +5,25 @@ import {
   ColumnComponent,
   Container,
   FlatListComponent,
-  FloatButton,
+  IconComponent,
   RowComponent,
   TextComponent
 } from "@/components"
-import AddIncomeForm from "@/components/jars/add-income"
-import AddJarForm from "@/components/jars/add-jar-form"
-import { useJars } from "@/components/jars/hooks/use-jars"
+import AddIncomeForm from "@/components/incomes/add-income"
+import { useHomeScreen } from "@/components/jars/hooks/use-jars"
 import JarCard from "@/components/jars/jar-card"
 import { useAppBottomSheet } from "@/contexts/bottom-sheet-provider"
 import useStore from "@/store"
 import { Jar } from "@/types"
+import { formatCurrency } from "@/utils"
+import { useRouter } from "expo-router"
 
 
 export default function JarsScreen() {
+  const router = useRouter()
   const { t } = useTranslation()
   const { userData } = useStore()
   const { openSheet, closeSheet } = useAppBottomSheet()
-  const [balance, setBalance] = useState(0)
 
   const {
     jars,
@@ -32,21 +32,12 @@ export default function JarsScreen() {
     isError,
     isRefetching,
     refetch,
-  } = useJars()
-
-
-  const handleOpenAddJar = () => {
-    openSheet(
-      <AddJarForm onSuccess={() => closeSheet()} />,
-      ['70%'],
-      true
-    )
-  }
+  } = useHomeScreen()
 
   const handleOpenAddIncome = () => {
     openSheet(
-      <AddIncomeForm onSuccess={() => closeSheet()} />,
-      ['70%'],
+      <AddIncomeForm />,
+      ['80%'],
       true
     )
   }
@@ -54,37 +45,48 @@ export default function JarsScreen() {
   return (
     <Container>
       <ColumnComponent gap={20} style={{ paddingTop: 5 }}>
-        <ColumnComponent gap={5}>
-          <TextComponent
-            text={t("good morning") + ", " + (userData?.full_name || '')}
-            type="label"
-            size={15}
-          />
-          <RowComponent gap={10}>
+        <RowComponent justify="space-between" alignItems="flex-start">
+          <ColumnComponent gap={5}>
             <TextComponent
-              text={t("total left") + ": "}
-              type="display"
+              text={t("good morning") + ", " + (userData?.full_name || '')}
+              type="label"
+              size={15}
             />
+            <RowComponent gap={10} onPress={handleOpenAddIncome}>
+              <TextComponent
+                text={t("total left") + ": "}
+                type="display"
+              />
+              <TextComponent
+                text={formatCurrency(totalBalance)}
+                type="display"
+                fontWeight='bold'
+                color='success'
+              />
+              <IconComponent
+                name="CirclePlus"
+                color='primary'
+                size={20}
+              />
+            </RowComponent>
             <TextComponent
-              text={new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalBalance || 0)}
-              type="display"
-              fontWeight='bold'
-              color='success'
+              text='safe to spend today based on your limits'
+              type="caption"
             />
-            <ButtonComponent
-              isIconOnly
-              iconProps={{
-                name: "CirclePlus",
-                color: 'primary',
-              }}
-              onPress={handleOpenAddIncome}
-            />
-          </RowComponent>
-          <TextComponent
-            text={t('safe to spend today based on your limits')}
-            type="caption"
+          </ColumnComponent>
+          <ButtonComponent
+            isIconOnly
+            rightIconProps={{
+              name: "ChevronRight",
+              color: 'primary',
+            }}
+            textProps={{
+              text: 'all incomes',
+              color: 'primary',
+            }}
+            onPress={() => router.push('/incomes')}
           />
-        </ColumnComponent>
+        </RowComponent>
 
         <FlatListComponent
           data={jars}
@@ -98,11 +100,6 @@ export default function JarsScreen() {
           hasBottomTabBar
           extraPaddingBottom={50}
           columnWrapperStyle={{ gap: 10 }}
-        />
-
-        <FloatButton
-          hasBottomTabBar
-          onPress={handleOpenAddJar}
         />
       </ColumnComponent>
     </Container>

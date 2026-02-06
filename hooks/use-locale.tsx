@@ -1,37 +1,36 @@
-import { format, formatDistanceToNow } from 'date-fns'
+import useStore from "@/store"
+import { format, formatDistanceToNow, isValid } from 'date-fns'
 import { enUS, vi, zhCN, zhTW } from "date-fns/locale"
-
 import { useMemo } from "react"
 
-import useStore from "@/store"
-
 type DateTimeMode = "date" | "time" | "datetime" | "relative" 
+
+const LOCALE_MAP = {
+  vi: vi,
+  zhTW: zhTW,
+  zhCN: zhCN,
+  enUS: enUS
+}
 
 export const useLocale = () => {
   const { currentLanguage } = useStore()
 
   const locale = useMemo(() => {
-    switch (currentLanguage) {
-      case "zh-TW":
-        return zhTW
-
-      case "zh-CN":
-        return zhCN
-
-      case "vi":
-        return vi
-
-      default:
-        return enUS
-    }
+    return LOCALE_MAP[currentLanguage as keyof typeof LOCALE_MAP] || enUS
   }, [currentLanguage])
 
   const formatLocalDateTime = (
-    datetime: string, 
+    datetime: string | Date | number,
     mode: DateTimeMode = "datetime", 
     customFormat?: string
   ) => {
+    if (!datetime) return ''
+    
     const dateObject = new Date(datetime)
+    
+    if (!isValid(dateObject)) {
+      return ''
+    }
 
     if (mode === "relative") {
       return formatDistanceToNow(dateObject, { 
@@ -40,21 +39,19 @@ export const useLocale = () => {
       })
     }
 
-    let formatString: string
+    let formatString = customFormat
     
-    if (customFormat) {
-      formatString = customFormat 
-    } else {
+    if (!formatString) {
       switch (mode) {
         case "date":
-          formatString = "dd MMM yyyy" 
+          formatString = "dd/MM/yyyy"
           break
         case "time":
-          formatString = "HH:mm:ss" 
+          formatString = "HH:mm" 
           break
         case "datetime":
         default:
-          formatString = "dd MMM yyyy, HH:mm:ss"
+          formatString = "HH:mm, dd/MM/yyyy"
           break
       }
     }
@@ -62,12 +59,13 @@ export const useLocale = () => {
     return format(dateObject, formatString, { locale })
   }
 
-  const formatDistance = (datetime: string) => {
+  const formatDistance = (datetime: string | Date | number) => {
       return formatLocalDateTime(datetime, "relative")
   }
 
   return { 
       formatLocalDateTime,
-      formatDistance
+      formatDistance,
+      locale
   }
 }

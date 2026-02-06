@@ -85,7 +85,7 @@ export default function DateTimePicker({
       {label && (
         <TextComponent
           text={label}
-          type="label"
+          type="caption"
         />
       )}
 
@@ -94,7 +94,7 @@ export default function DateTimePicker({
           height: 44,
           padding: 10,
           borderWidth: 1,
-          borderRadius: 8,
+          borderRadius: 16,
           flexDirection: "row",
           alignItems: "center",
           gap: 10,

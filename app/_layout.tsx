@@ -42,7 +42,8 @@ const screens = [
   '(tabs)',
   'no-access',
   'profile',
-  'notifications'
+  'notifications',
+  'incomes'
 ]
 
 const authenScreens = [

@@ -1,22 +1,28 @@
 import { QUERY_KEYS } from '@/constants'
-import { JarsQuery } from '@/database'
+import { IncomesQuery, JarsQuery } from '@/database'
 import { useQuery } from '@tanstack/react-query'
 import { useSQLiteContext } from 'expo-sqlite'
 
-export const useJars = () => {
+export const useHomeScreen = () => {
     const db = useSQLiteContext()
 
-    const query = useQuery({
+    const jarQuery = useQuery({
         queryKey: [QUERY_KEYS.JARS],
         queryFn: () => JarsQuery.getAll(db),
     })
 
-    const jars = query.data || []
-    const totalBalance = jars.reduce((acc, jar) => acc + jar.current_balance, 0)
+    const incomeQuery = useQuery({
+        queryKey: [QUERY_KEYS.INCOMES],
+        queryFn: () => IncomesQuery.getTotalAmount(db),
+    })
+
+    const jars = jarQuery.data || []
     const totalItems = jars.length
+    const totalBalance = incomeQuery.data || 0
 
     return {
-        ...query,
+        ...jarQuery,
+        ...incomeQuery,
         jars,
         totalItems,
         totalBalance,

@@ -139,7 +139,7 @@ export default function InlineDropdown({
               height: 44,
               borderWidth: 1,
               borderColor: colors.outlineVariant,
-              borderRadius: 8,
+              borderRadius: 16,
               paddingHorizontal: 10,
               paddingVertical: 10,
               backgroundColor: colors.background,
@@ -162,11 +162,11 @@ export default function InlineDropdown({
           searchPlaceholder={t(searchPlaceholder)}
           inputSearchStyle={{
             color: colors.onBackground,
-            borderRadius: 8,
+            borderRadius: 16,
           }}
           containerStyle={{
             maxHeight: Math.max(120, maxDropdownHeight),
-            borderRadius: 8,
+            borderRadius: 16,
             backgroundColor: colors.background,
             borderWidth: 1,
             borderColor: colors.cardDisabled,

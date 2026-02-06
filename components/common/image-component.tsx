@@ -62,7 +62,7 @@ export default function ImageComponent({
           {
             width: '100%',
             height: '100%',
-            borderRadius: 8,
+            borderRadius: 16,
             backgroundColor: colors.card,
             alignItems: 'center',
             justifyContent: 'center',
@@ -92,7 +92,7 @@ export default function ImageComponent({
           style={{
             width: '100%',
             height: '100%',
-            borderRadius: 8,
+            borderRadius: 16,
             borderWidth: isOutline ? 1 : 0,
             borderColor: isOutline ? colors.outlineVariant : 'transparent',
           }}

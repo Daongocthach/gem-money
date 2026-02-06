@@ -89,7 +89,7 @@ export default function SingleListSelector({
                     height: 44,
                     padding: 10,
                     borderWidth: 1,
-                    borderRadius: 8,
+                    borderRadius: 16,
                     gap: 10,
                     borderColor: colors.outlineVariant,
                     backgroundColor: "transparent",
@@ -169,7 +169,7 @@ export default function SingleListSelector({
                                     style={{
                                         paddingVertical: 10,
                                         paddingHorizontal: 14,
-                                        borderRadius: 8,
+                                        borderRadius: 16,
                                         backgroundColor: isSelected
                                             ? colors.cardDisabled
                                             : 'transparent',

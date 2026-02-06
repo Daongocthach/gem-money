@@ -1,17 +1,19 @@
 
+import ButtonComponent from '@/components/common/button-component'
 import CardContainer from '@/components/common/card-container'
-import ChipComponent from '@/components/common/chip-component'
 import ColumnComponent from '@/components/common/column-component'
-import IconComponent from '@/components/common/icon-component'
 import ProgressBar from '@/components/common/progress-bar'
 import RowComponent from '@/components/common/row-component'
 import TextComponent from '@/components/common/text-component'
 
+import { useAppBottomSheet } from '@/contexts/bottom-sheet-provider'
 import { useTheme } from '@/hooks'
 import { Jar } from '@/types'
+import { formatCurrency, formatK } from '@/utils'
 
 export default function JarCard(jar: Jar) {
     const { colors } = useTheme()
+    const { openSheet, closeSheet } = useAppBottomSheet()
 
     if (!jar) return null
 
@@ -24,30 +26,39 @@ export default function JarCard(jar: Jar) {
         icon,
     } = jar
 
-    const formattedBalance = new Intl.NumberFormat('vi-VN', {
-        style: 'currency',
-        currency: 'VND'
-    }).format(current_balance)
+    const remainingBalance = formatCurrency(target_balance - current_balance)
 
-    const handleRouting = () => {
+    const spentPercentage = target_balance > 0
+        ? (current_balance / target_balance) * 100
+        : 0
 
-    }
+    const progressValue = Math.min(Math.max(spentPercentage / 100, 0), 1)
+
+
 
     return (
-        <CardContainer
-            onPress={handleRouting}
-            style={{ flex: 1 }}
-        >
+        <CardContainer style={{ flex: 1 }} >
             <ColumnComponent gap={15}>
-                <RowComponent justify='space-between'>
-                    <IconComponent
-                        name={icon as any || 'Wallet'}
-                        color={color}
-                        size={24}
-                    />
-                    <ChipComponent
+                <RowComponent justify='space-between' gap={20}>
+                    <ButtonComponent
+                        isIconOnly
                         textProps={{
                             text: percentage + '%',
+                            type: 'title2',
+                            fontWeight: 'semibold'
+                        }}
+                        iconProps={{
+                            name: icon as any || 'Wallet',
+                            color: color ?? 'primary',
+                            size: 20,
+                        }}
+                    />
+                    <ButtonComponent
+                        isIconOnly
+                        iconProps={{
+                            name: 'CircleFadingPlus',
+                            color: color ?? 'primary',
+                            size: 20,
                         }}
                     />
                 </RowComponent>
@@ -59,7 +70,7 @@ export default function JarCard(jar: Jar) {
                         fontWeight='bold'
                     />
                     <TextComponent
-                        text={formattedBalance}
+                        text={formatCurrency(remainingBalance)}
                         size={20}
                         fontWeight='bold'
                         color={colors.primary}
@@ -69,22 +80,20 @@ export default function JarCard(jar: Jar) {
                 <ColumnComponent gap={8}>
                     <RowComponent justify='space-between'>
                         <TextComponent
-                            text={current_balance?.toString() +
-                                'k / ' +
-                                target_balance?.toString() +
-                                'k'}
+                            text={formatK(current_balance) +
+                                ' / ' +
+                                formatK(target_balance)}
                             type='label'
                             size={11}
                         />
                         <TextComponent
-                            text={percentage.toString() + '%'}
+                            text={spentPercentage + '%'}
                             type='label'
                             size={11}
                         />
                     </RowComponent>
-
                     <ProgressBar
-                        progress={percentage / 100}
+                        progress={progressValue}
                         progressColor={color}
                         backgroundColor={colors.cardVariant}
                     />

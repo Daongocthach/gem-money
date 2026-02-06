@@ -43,9 +43,9 @@ const Header = ({ title }: HeaderProps) => {
               size: 25,
               color: 'icon'
             }}
-            backgroundColor='cardDisabled'
+            backgroundColor='card'
             buttonStyle={{
-              padding: 5,
+              padding: 10,
               borderRadius: 100,
             }}
           />

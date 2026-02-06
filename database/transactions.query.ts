@@ -1,52 +1,138 @@
+import { Transaction } from "@/types"; // Đảm bảo type Transaction khớp với schema
 import { SQLiteDatabase } from "expo-sqlite";
-import { JarsQuery } from "./jars.query";
 
 export const TransactionsQuery = {
+  /**
+   * 1. Lấy tất cả giao dịch (không phân trang)
+   */
   getAll: async (db: SQLiteDatabase) => {
-    return await db.getAllAsync('SELECT * FROM transactions WHERE is_deleted = 0 ORDER BY date DESC');
+    return await db.getAllAsync<Transaction>(
+      'SELECT * FROM transactions WHERE is_deleted = 0 ORDER BY date DESC'
+    );
   },
 
-  create: async (db: SQLiteDatabase, trans: {
-    id: string, jar_id: string, amount: number, note: string, type: 'EXPENSE' | 'INCOME' | 'TRANSFER', target_jar_id?: string
-  }) => {
+  /**
+   * 2. Lấy giao dịch phân trang kèm lọc theo ngày và theo hũ
+   */
+  getAllPaginated: async (
+    db: SQLiteDatabase,
+    { page, pageSize, dateFilter, jarId }: { 
+      page: number; 
+      pageSize: number; 
+      dateFilter?: string; 
+      jarId?: string 
+    }
+  ) => {
+    const offset = (page - 1) * pageSize;
+    let query = `SELECT * FROM transactions WHERE is_deleted = 0`;
+    const params: any[] = [];
+
+    if (dateFilter) {
+      // Lọc các giao dịch từ ngày được chọn trở về trước
+      query += ` AND strftime('%Y-%m-%d', date / 1000, 'unixepoch') <= ?`;
+      params.push(dateFilter);
+    }
+
+    if (jarId) {
+      query += ` AND jar_id = ?`;
+      params.push(jarId);
+    }
+
+    query += ` ORDER BY date DESC LIMIT ? OFFSET ?`;
+    params.push(pageSize, offset);
+
+    return await db.getAllAsync<Transaction>(query, params);
+  },
+
+  /**
+   * 3. Lấy chi tiết một giao dịch theo ID
+   */
+  getById: async (db: SQLiteDatabase, id: string) => {
+    return await db.getFirstAsync<Transaction>(
+      'SELECT * FROM transactions WHERE id = ? AND is_deleted = 0',
+      [id]
+    );
+  },
+
+  /**
+   * 4. Tạo mới một giao dịch chi tiêu
+   * Cập nhật current_balance của hũ (+ amount)
+   */
+  create: async (
+    db: SQLiteDatabase,
+    tx: { id: string; jar_id: string; amount: number; note: string; date: Date }
+  ) => {
     const now = Date.now();
-    
-    // Sử dụng transaction của SQLite để đảm bảo toàn vẹn dữ liệu
-    await db.withTransactionAsync(async () => {
-      // 1. Chèn bản ghi giao dịch
+    const recordDate = tx.date.getTime();
+
+    return await db.withTransactionAsync(async () => {
+      // Chèn giao dịch
       await db.runAsync(
-        `INSERT INTO transactions (id, jar_id, target_jar_id, amount, note, date, type, updated_at) 
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-        [trans.id, trans.jar_id, trans.target_jar_id || null, trans.amount, trans.note, now, trans.type, now]
+        `INSERT INTO transactions (id, jar_id, amount, note, date, updated_at) 
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [tx.id, tx.jar_id, tx.amount, tx.note, recordDate, now]
       );
 
-      // 2. Cập nhật số dư trong hũ tương ứng
-      if (trans.type === 'EXPENSE') {
-        await JarsQuery.updateBalance(db, trans.jar_id, -trans.amount);
-      } else if (trans.type === 'INCOME') {
-        await JarsQuery.updateBalance(db, trans.jar_id, trans.amount);
-      } else if (trans.type === 'TRANSFER' && trans.target_jar_id) {
-        // Chuyển tiền: Trừ hũ A, cộng hũ B
-        await JarsQuery.updateBalance(db, trans.jar_id, -trans.amount);
-        await JarsQuery.updateBalance(db, trans.target_jar_id, trans.amount);
-      }
+      // Cập nhật số dư đã chi (current_balance) trong hũ
+      await db.runAsync(
+        `UPDATE jars SET current_balance = current_balance + ?, updated_at = ? WHERE id = ?`,
+        [tx.amount, now, tx.jar_id]
+      );
     });
   },
 
-  delete: async (db: SQLiteDatabase, id: string) => {
-    // Xóa mềm và hoàn lại tiền vào hũ (Logic ngược lại với Create)
-    const trans = await db.getFirstAsync<any>('SELECT * FROM transactions WHERE id = ?', [id]);
-    if (!trans) return;
+  /**
+   * 5. Cập nhật giao dịch
+   * Xử lý trường hợp thay đổi số tiền hoặc đổi hũ chi tiêu
+   */
+  update: async (db: SQLiteDatabase, tx: Transaction) => {
+    const now = Date.now();
+    const oldTx = await TransactionsQuery.getById(db, tx.id);
+    if (!oldTx) throw new Error("Transaction not found");
 
-    await db.withTransactionAsync(async () => {
-      await db.runAsync('UPDATE transactions SET is_deleted = 1, updated_at = ? WHERE id = ?', [Date.now(), id]);
-      
-      if (trans.type === 'EXPENSE') {
-        await JarsQuery.updateBalance(db, trans.jar_id, trans.amount);
-      } else if (trans.type === 'INCOME') {
-        await JarsQuery.updateBalance(db, trans.jar_id, -trans.amount);
-      }
-      // Lưu ý: Logic Transfer xóa sẽ phức tạp hơn chút, cần xử lý cả 2 hũ.
+    return await db.withTransactionAsync(async () => {
+      // 1. Hoàn tác số tiền cũ ở hũ cũ
+      await db.runAsync(
+        `UPDATE jars SET current_balance = current_balance - ?, updated_at = ? WHERE id = ?`,
+        [oldTx.amount, now, oldTx.jar_id]
+      );
+
+      // 2. Cập nhật thông tin giao dịch mới
+      await db.runAsync(
+        `UPDATE transactions SET jar_id = ?, amount = ?, note = ?, date = ?, updated_at = ? 
+         WHERE id = ?`,
+        [tx.jar_id, tx.amount, tx.note, tx.date, now, tx.id]
+      );
+
+      // 3. Cập nhật số tiền mới vào hũ mới (hoặc hũ hiện tại)
+      await db.runAsync(
+        `UPDATE jars SET current_balance = current_balance + ?, updated_at = ? WHERE id = ?`,
+        [tx.amount, now, tx.jar_id]
+      );
+    });
+  },
+
+  /**
+   * 6. Xóa giao dịch (Soft Delete)
+   * Trừ số tiền đã chi ra khỏi current_balance của hũ
+   */
+  delete: async (db: SQLiteDatabase, id: string) => {
+    const now = Date.now();
+    const tx = await TransactionsQuery.getById(db, id);
+    if (!tx) return;
+
+    return await db.withTransactionAsync(async () => {
+      // Đánh dấu xóa giao dịch
+      await db.runAsync(
+        'UPDATE transactions SET is_deleted = 1, updated_at = ? WHERE id = ?',
+        [now, id]
+      );
+
+      // Trừ số tiền đã xóa khỏi số dư đã chi của hũ
+      await db.runAsync(
+        'UPDATE jars SET current_balance = current_balance - ?, updated_at = ? WHERE id = ?',
+        [tx.amount, now, tx.jar_id]
+      );
     });
   }
 };

@@ -23,6 +23,7 @@ interface ButtonComponentProps extends TouchableOpacityProps {
   linearGradientColors?: string[]
   buttonStyle?: TouchableOpacityProps["style"]
   iconProps?: IconComponentProps
+  rightIconProps?: IconComponentProps
   textProps?: TextComponentProps
 }
 
@@ -38,15 +39,22 @@ export default function ButtonComponent({
   linearGradientColors = ['#31cce8', '#6ae1da'],
   buttonStyle,
   iconProps,
+  rightIconProps,
   textProps,
   ...props
 }: ButtonComponentProps) {
   const { getColorByKey } = useGetColorByKey()
 
   const { bgColor, borderColor, contentColor, padding, borderWidth } = useMemo(() => {
-    const background = (ghost || outline || isIconOnly) ? 'transparent' : getColorByKey(backgroundColor)
+    const background = (ghost || outline || isIconOnly) ?
+      'transparent' :
+      getColorByKey(backgroundColor)
 
-    const color = iconProps?.color ? iconProps.color : (ghost || isIconOnly) ? 'icon' : outline ? backgroundColor : 'white'
+    const color = iconProps?.color ?
+      iconProps.color :
+      (ghost || isIconOnly) ?
+        'icon' :
+        outline ? backgroundColor : 'white'
 
     return {
       bgColor: background,
@@ -75,7 +83,7 @@ export default function ButtonComponent({
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "center",
-            borderRadius: isIconOnly ? 0 : 8,
+            borderRadius: isIconOnly ? 0 : 16,
             borderColor: borderColor,
             borderWidth,
             opacity: (disabled || loading) ? 0.6 : 1,
@@ -85,11 +93,11 @@ export default function ButtonComponent({
         ]}
       >
         {loading ? (
-          ghost ? (
-            <ActivityIndicator color={contentColor} size={iconProps?.size || 20} />
-          ) : (
-            <ActivityIndicator color={contentColor} style={{ marginRight: 8 }} />
-          )
+          <ActivityIndicator
+            color={contentColor}
+            size={ghost ? (iconProps?.size || 20) : 'small'}
+            style={!ghost ? { marginRight: 8 } : null}
+          />
         ) : (
           iconProps?.name && (
             <Icon
@@ -110,6 +118,14 @@ export default function ButtonComponent({
           />
         )}
         {children}
+        {rightIconProps?.name && (
+          <Icon
+            size={20}
+            color={contentColor}
+            style={{ marginLeft: (textProps?.text || children) ? 6 : 0 }}
+            {...rightIconProps}
+          />
+        )}
       </LinearGradient>
     </TouchableOpacity>
   )

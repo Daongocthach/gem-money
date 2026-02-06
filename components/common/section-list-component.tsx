@@ -1,170 +1,113 @@
-import { useTheme } from "@/hooks"
-import React, { useEffect, useMemo, useRef } from 'react'
+import React from 'react'
 import {
-    ListRenderItem,
+    DefaultSectionT,
     SectionList,
+    SectionListData,
     SectionListProps,
-    View
 } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
+
 import RefreshControlComponent from './refresh-control-component'
+import Suspense from './suspense'
 import TextComponent from './text-component'
 
-type AnySection = { title?: string; data: any[] }
-
-interface SectionListComponentProps
-    extends Omit<SectionListProps<any, AnySection>, 'sections' | 'renderItem' | 'keyExtractor'> {
-    sections: AnySection[]
+interface SectionListComponentProps extends SectionListProps<any, DefaultSectionT> {
+    ref?: React.Ref<SectionList<any, DefaultSectionT>>
+    sections: SectionListData<any, DefaultSectionT>[]
     keyExtractor: (item: any, index: number) => string
-    renderItem: ListRenderItem<any>
-    renderSectionHeader?: SectionListProps<any, AnySection>['renderSectionHeader']
+    renderItem: (info: { item: any; index: number; section: SectionListData<any, DefaultSectionT> }) => React.ReactElement | null
+    renderSectionHeader?: (info: { section: SectionListData<any, DefaultSectionT> }) => React.ReactElement | null
     onRefresh?: () => void
     refreshing?: boolean
     loadMore?: () => void
-    hasNextPage?: boolean
     isLoading?: boolean
     isFetchingNextPage?: boolean
     isError?: boolean
-    stickySectionHeadersEnabled?: boolean
-    contentContainerStyle?: SectionListProps<any, AnySection>['contentContainerStyle']
-    onEndReachedThreshold?: number
+    hasMore?: boolean
+    hasBottomTabBar?: boolean
+    extraPaddingBottom?: number
+    contentContainerStyle?: SectionListProps<any, DefaultSectionT>['contentContainerStyle']
+    hideFooter?: boolean
 }
 
 export default function SectionListComponent({
-    sections,
+    ref,
+    sections = [],
     keyExtractor,
     renderItem,
     renderSectionHeader,
     onRefresh,
     refreshing = false,
     loadMore,
-    hasNextPage = false,
     isLoading = false,
     isFetchingNextPage = false,
     isError = false,
-    stickySectionHeadersEnabled = true,
+    hasMore = false,
+    hasBottomTabBar = false,
+    extraPaddingBottom = 0,
     contentContainerStyle,
-    onEndReachedThreshold = 0.1,
+    hideFooter = false,
     ...props
 }: SectionListComponentProps) {
-    const { colors } = useTheme()
-
-    const canLoadMoreRef = useRef(false)
-    const lastCalledCountRef = useRef(0)
-
-    const totalItems = useMemo(
-        () => sections.reduce((sum, section) => sum + (section.data?.length ?? 0), 0),
-        [sections]
-    )
-
-    useEffect(() => {
-        if (totalItems > lastCalledCountRef.current) {
-            canLoadMoreRef.current = true
-        }
-    }, [totalItems])
-
-    const handleEndReached = () => {
-        if (!loadMore) return
-        if (!hasNextPage) return
-        if (isFetchingNextPage) return
-        if (!canLoadMoreRef.current) return
-
-        if (lastCalledCountRef.current === totalItems) return
-
-        canLoadMoreRef.current = false
-        lastCalledCountRef.current = totalItems
-        loadMore()
-    }
-
-    const defaultHeader: SectionListProps<any, AnySection>['renderSectionHeader'] =
-        ({ section }) =>
-            section.title ? (
-                <View
-                    style={{
-                        paddingVertical: 8,
-                        paddingHorizontal: 12,
-                        backgroundColor: colors.background,
-                        borderRadius: 8
-                    }}
-                >
-                    <TextComponent text={section.title} />
-                </View>
-            ) : null
-
-
-    const ListEmptyComponent = useMemo(() => {
-        if (!isLoading && totalItems < 1) {
-            return (
-                <TextComponent
-                    textAlign='center'
-                    type='caption'
-                    text={isError ? 'error loading data' : 'no data found'}
-                    style={{ marginVertical: 16 }}
-                />
-            )
-        }
-        return null
-    }, [totalItems, isLoading, isError, colors.outlineVariant])
-
-    const ListFooterComponent = useMemo(() => {
-        if (totalItems === 0) return null;
-
-        if (isFetchingNextPage) {
-            return (
-                <TextComponent
-                    textAlign='center'
-                    type='caption'
-                    text="loading more"
-                    style={{ marginVertical: 16 }}
-                />
-            )
-        }
-
-        if (!hasNextPage) {
-            return (
-                <TextComponent
-                    textAlign='center'
-                    type='caption'
-                    text="end of page"
-                    style={{ marginVertical: 16 }}
-                />
-            )
-        }
-
-        return null;
-
-    }, [totalItems, isFetchingNextPage, hasNextPage, colors.outlineVariant]);
-
+    const insets = useSafeAreaInsets()
+    
+    // Kiểm tra dữ liệu hợp lệ
+    const safeSections = Array.isArray(sections) ? sections : []
+    const isEmpty = safeSections.length === 0 || safeSections.every(s => s.data.length === 0)
 
     return (
         <SectionList
-            sections={sections}
+            ref={ref}
+            sections={safeSections}
             keyExtractor={keyExtractor}
             renderItem={renderItem}
-            renderSectionHeader={renderSectionHeader ?? defaultHeader}
-            stickySectionHeadersEnabled={stickySectionHeadersEnabled}
+            renderSectionHeader={renderSectionHeader}
+            stickySectionHeadersEnabled={true} // Tùy chọn giữ header ở trên cùng
             refreshControl={
                 onRefresh ? (
                     <RefreshControlComponent
-                        refreshing={refreshing}
-                        onRefresh={() => {
-                            lastCalledCountRef.current = 0
-                            canLoadMoreRef.current = false
-                            onRefresh()
-                        }}
+                        refreshing={refreshing || isLoading}
+                        onRefresh={onRefresh}
                     />
                 ) : undefined
             }
-            onMomentumScrollBegin={() => {
-                canLoadMoreRef.current = true
-            }}
-            onEndReached={handleEndReached}
-            onEndReachedThreshold={onEndReachedThreshold}
-            ListEmptyComponent={ListEmptyComponent}
-            ListFooterComponent={ListFooterComponent}
-            contentContainerStyle={[
-                { paddingHorizontal: 2, gap: 8 },
-                contentContainerStyle,
-            ]}
+            onEndReached={loadMore}
+            onEndReachedThreshold={0.5}
+            ListEmptyComponent={
+                hideFooter ? null :
+                    (!isLoading && isEmpty) ? (
+                        <TextComponent
+                            textAlign='center'
+                            type='caption'
+                            text={isError ? 'Error loading data' : 'No data found'}
+                            style={{ marginVertical: 16 }}
+                        />
+                    ) : null
+            }
+            ListFooterComponent={
+                hideFooter ? null :
+                    (isLoading && isEmpty) ? (
+                        <Suspense />
+                    ) : (isFetchingNextPage) ? (
+                        <TextComponent
+                            textAlign='center'
+                            type='caption'
+                            text="Loading more..."
+                            style={{ marginVertical: 16 }}
+                        />
+                    ) : (!hasMore && !isEmpty) ? (
+                        <TextComponent
+                            textAlign='center'
+                            type='caption'
+                            text="End of list"
+                            style={{ marginVertical: 16 }}
+                        />
+                    ) : null
+            }
+            contentContainerStyle={[{
+                paddingHorizontal: 2,
+                paddingBottom: insets.bottom + (hasBottomTabBar ? 150 : 30) + extraPaddingBottom,
+            }, contentContainerStyle]}
             {...props}
         />
     )

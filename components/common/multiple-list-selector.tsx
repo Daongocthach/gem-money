@@ -106,7 +106,7 @@ export default function MultipleListSelector({
             height: 44,
             paddingHorizontal: 12,
             borderWidth: 1,
-            borderRadius: 8,
+            borderRadius: 16,
             borderColor: colors.outlineVariant,
             justifyContent: 'space-between',
             backgroundColor: 'transparent',
@@ -243,7 +243,7 @@ export default function MultipleListSelector({
                 alignItems="center"
                 onPress={() => toggleItem(item)}
                 style={{
-                  borderRadius: 8,
+                  borderRadius: 16,
                   paddingVertical: 12,
                   paddingHorizontal: 12,
                   borderBottomWidth: 1,
