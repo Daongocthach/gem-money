@@ -28,6 +28,18 @@ export type ThemeColors = {
     onTertiary: string
     tertiaryContainer: string
 
+    quaternary: string
+    onQuaternary: string
+    quaternaryContainer: string
+
+    quinary: string
+    onQuinary: string
+    quinaryContainer: string
+
+    senary: string
+    onSenary: string
+    senaryContainer: string
+
     warning: string
     onWarning: string
     warningContainer: string

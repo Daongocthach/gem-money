@@ -1,26 +1,32 @@
-import { useTheme } from "@/hooks"
+import { useGetColorByKey, useTheme } from "@/hooks"
+import { ThemeColorKeys } from "@/types/theme.type"
 import React, { ReactNode } from 'react'
 import { StyleProp, TouchableOpacity, TouchableOpacityProps, ViewStyle } from 'react-native'
 
 interface CardContainerProps extends TouchableOpacityProps {
     children?: ReactNode
-    cardColor?: string
     style?: StyleProp<ViewStyle>
     blurIntensity?: number
     gap?: number
     isBorder?: boolean
+    backgroundColor?: ThemeColorKeys
 }
 
 const CardContainer = ({
     children,
     style,
-    cardColor,
     blurIntensity = 100,
     gap,
     isBorder,
+    backgroundColor,
     ...rest
 }: CardContainerProps) => {
     const { colors } = useTheme()
+    const { getColorByKey } = useGetColorByKey()
+
+    const background = isBorder ?
+        'transparent' :
+        getColorByKey(backgroundColor)
 
     return (
         <TouchableOpacity
@@ -31,7 +37,7 @@ const CardContainer = ({
                 gap: gap,
                 borderWidth: isBorder ? 1 : 0,
                 borderColor: colors.outline,
-                backgroundColor: isBorder ? 'transparent' : colors.card,
+                backgroundColor: background || colors.card,
                 padding: 20,
                 borderRadius: 30,
                 shadowColor: colors.shadow,

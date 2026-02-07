@@ -7,26 +7,6 @@ export const WEEKDAYS: Record<LanguageProps, string[]> = {
   "zh-TW": ['週日', '週一', '週二', '週三', '週四', '週五', '週六'],
 }
 
-
-export const MONTHS: Record<LanguageProps, string[]> = {
-  vi: [
-    'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4',
-    'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8',
-    'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'
-  ],
-  en: [
-    'January', 'February', 'March', 'April',
-    'May', 'June', 'July', 'August',
-    'September', 'October', 'November', 'December'
-  ],
-  "zh-CN": [
-    "1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"
-  ],
-  "zh-TW": [
-    "1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"
-  ],
-}
-
 export const PAGE_SIZE = 10
 export const IPAD = 768
 export const TABLET = 1024

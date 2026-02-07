@@ -24,6 +24,11 @@ export const alertList = {
         text1: "delete_income",
         text2: "are_you_sure_delete_income",
     },
+    delete_transaction_confirm: {
+        type: "confirm",
+        text1: "delete_transaction",
+        text2: "are_you_sure_delete_transaction",
+    },
 } as const
 
 export type AlertType = keyof typeof alertList

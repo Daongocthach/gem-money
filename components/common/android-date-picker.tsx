@@ -1,6 +1,5 @@
-import { MONTHS, windowWidth } from "@/constants"
-import { useTheme } from "@/hooks"
-import useStore from "@/store"
+import { windowWidth } from "@/constants"
+import { useDateTimeLabels, useTheme } from "@/hooks"
 import React, { useMemo, useState } from "react"
 import { StyleSheet, View } from "react-native"
 import WheelPickerExpo from 'react-native-wheel-picker-expo'
@@ -20,8 +19,8 @@ export default function AndroidDatePicker({
     width = windowWidth,
     onChange,
 }: Props) {
-    const { currentLanguage } = useStore()
     const { colors } = useTheme()
+    const { monthLabels } = useDateTimeLabels()
 
     const yearsData = useMemo(() => {
         const startYear = minimumDate ? minimumDate.getFullYear() : 2000
@@ -33,12 +32,11 @@ export default function AndroidDatePicker({
     }, [minimumDate, maximumDate])
 
     const monthsData = useMemo(() => {
-        const monthNames = MONTHS[currentLanguage] || []
-        return Array.from({ length: 12 }, (_, index) => ({
-            label: monthNames[index] || `${index + 1}`,
+        return monthLabels.map((item, index) => ({
+            label: item.full,
             value: index
         }))
-    }, [currentLanguage])
+    }, [monthLabels])
 
     const getDaysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate()
 
@@ -69,7 +67,7 @@ export default function AndroidDatePicker({
         <View style={[styles.container, { width, backgroundColor: colors.background }]}>
             <WheelPickerExpo
                 height={200}
-                width={width * 0.25}
+                width={width * 0.2}
                 initialSelectedIndex={selectedDay - 1}
                 items={daysData}
                 backgroundColor={colors.background}
@@ -85,7 +83,7 @@ export default function AndroidDatePicker({
 
             <WheelPickerExpo
                 height={200}
-                width={width * 0.4}
+                width={width * 0.5}
                 initialSelectedIndex={selectedMonth}
                 items={monthsData}
                 backgroundColor={colors.background}

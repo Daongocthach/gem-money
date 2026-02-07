@@ -25,14 +25,14 @@ export const resources = {
 }
 
 getCurrentLanguage().then((language) => {
-  const lng = language || "en"
+  const lng = language || "vi"
 
   i18next.use(initReactI18next).init({
     lng,
     resources,
     defaultNS,
     ns: ["data"],
-    fallbackLng: "en",
+    fallbackLng: "vi",
     supportedLngs: ["zh-TW", "zh-CN", "en", "vi"],
     interpolation: { escapeValue: false },
   })

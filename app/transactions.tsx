@@ -1,12 +1,22 @@
-import { ButtonComponent, ColumnComponent, Container, IconComponent, MenuComponent, RowComponent, SectionListComponent, TextComponent } from '@/components'
+import {
+    ButtonComponent,
+    ColumnComponent,
+    Container,
+    IconComponent,
+    MenuComponent,
+    RowComponent,
+    SectionListComponent,
+    TextComponent
+} from '@/components'
 import MonthSelector from '@/components/common/month-selector'
-import { useIncomeMutation } from '@/components/incomes/hooks/use-income-mutation'
-import { useIncomesInfiniteQuery } from '@/components/incomes/hooks/use-incomes'
-import { Income } from '@/types'
+import { useTransactionMutations } from '@/components/transactions/hooks/use-transaction-mutation'
+import { useTransactionsInfiniteQuery } from '@/components/transactions/hooks/use-transactions'
+import { Transaction } from '@/types'
 import { formatCurrency } from '@/utils'
-import React from 'react'
+import { useLocalSearchParams } from 'expo-router'
 
-export default function IncomesScreen() {
+export default function TransactionsScreen() {
+    const { jar_id } = useLocalSearchParams<{ jar_id?: string }>()
 
     const {
         sections,
@@ -19,13 +29,13 @@ export default function IncomesScreen() {
         refetch,
         isRefetching,
         isError
-    } = useIncomesInfiniteQuery()
+    } = useTransactionsInfiniteQuery({ jarId: jar_id })
 
     const {
-        handleDeleteIncome,
-    } = useIncomeMutation({})
+        handleDeleteTransaction,
+    } = useTransactionMutations()
 
-    const renderItem = ({ item }: { item: Income }) => (
+    const renderItem = ({ item }: { item: Transaction }) => (
         <RowComponent justify='space-between' gap={20}>
             <ColumnComponent style={{ flexShrink: 1 }} gap={10}>
                 <TextComponent
@@ -34,28 +44,22 @@ export default function IncomesScreen() {
                     style={{ flexShrink: 1 }}
                 />
                 <TextComponent
-                    text={new Date(item.date).toLocaleDateString() || ''}
+                    text={new Date(item.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     type='caption'
                 />
             </ColumnComponent>
+
             <MenuComponent
                 menuChildren={() => (
                     <ColumnComponent gap={24}>
                         <ButtonComponent
                             isIconOnly
-                            iconProps={{
-                                name: 'Pencil',
-                                size: 14,
-                            }}
-                            textProps={{
-                                text: 'edit',
-                            }}
-                            buttonStyle={{
-                                justifyContent: 'flex-start',
-                            }}
+                            iconProps={{ name: 'Pencil', size: 14 }}
+                            textProps={{ text: 'edit' }}
                             onPress={() => {
-
+                                // Logic mở modal sửa ở đây
                             }}
+                            buttonStyle={{ justifyContent: 'flex-start' }}
                         />
                         <ButtonComponent
                             isIconOnly
@@ -63,16 +67,11 @@ export default function IncomesScreen() {
                                 name: 'Trash2',
                                 color: 'error',
                                 size: 14,
-
                             }}
-                            textProps={{
-                                text: 'delete',
-                            }}
-                            buttonStyle={{
-                                justifyContent: 'flex-start',
-                            }}
+                            textProps={{ text: 'delete' }}
+                            buttonStyle={{ justifyContent: 'flex-start' }}
                             onPress={() => {
-                                handleDeleteIncome(item.id)
+                                handleDeleteTransaction(item.id)
                             }}
                         />
                     </ColumnComponent>
@@ -80,9 +79,9 @@ export default function IncomesScreen() {
             >
                 <RowComponent gap={15}>
                     <TextComponent
-                        text={'+' + formatCurrency(item.amount)}
+                        text={'-' + formatCurrency(item.amount)}
                         type='title2'
-                        color='success'
+                        color='error'
                         fontWeight='semibold'
                     />
                     <IconComponent
@@ -101,9 +100,7 @@ export default function IncomesScreen() {
                 color: 'onCard',
                 textAlign: 'left',
             }}
-            style={{
-                flex: 1,
-            }}
+            style={{ flex: 1 }}
             backgroundColor={'card'}
             buttonStyle={{
                 borderRadius: 0,
@@ -114,7 +111,7 @@ export default function IncomesScreen() {
     )
 
     return (
-        <Container headerTitle='incomes'>
+        <Container headerTitle='Transactions'>
             <MonthSelector
                 selectedDate={selectedDate}
                 setSelectedDate={setSelectedDate}
@@ -122,7 +119,7 @@ export default function IncomesScreen() {
 
             <SectionListComponent
                 sections={sections}
-                keyExtractor={(item: Income) => item.id.toString()}
+                keyExtractor={(item: Transaction) => item.id}
                 renderItem={renderItem}
                 renderSectionHeader={renderSectionHeader}
 
@@ -138,10 +135,8 @@ export default function IncomesScreen() {
                 }}
 
                 stickySectionHeadersEnabled={true}
-                contentContainerStyle={{ gap: 20 }}
-                style={{
-                    marginTop: 20,
-                }}
+                contentContainerStyle={{ gap: 20, paddingBottom: 100 }}
+                style={{ marginTop: 20 }}
             />
         </Container>
     )

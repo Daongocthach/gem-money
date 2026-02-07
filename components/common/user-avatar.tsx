@@ -5,10 +5,6 @@ import React, { createContext, ReactNode, useContext } from 'react'
 import { ColorValue, StyleSheet, TextStyle, View, ViewStyle } from 'react-native'
 import TextComponent from './text-component'
 
-/* =======================
-   Types
-======================= */
-
 interface AvatarCtx {
   avatarSize: number
   displayName: string
@@ -30,10 +26,6 @@ interface SubComponentProps {
   style?: ViewStyle
 }
 
-/* =======================
-   Context
-======================= */
-
 const AvatarCtx = createContext<AvatarCtx | null>(null)
 
 function useAvatarCtx() {
@@ -45,10 +37,6 @@ function useAvatarCtx() {
   }
   return ctx
 }
-
-/* =======================
-   Sub Components
-======================= */
 
 function Image() {
   const { avatarSize, displayName, avatarColor } = useAvatarCtx()
@@ -132,10 +120,6 @@ function Description({ style }: { style?: TextStyle }) {
   )
 }
 
-/* =======================
-   Main Component (typed)
-======================= */
-
 type UserAvatarComponent = React.FC<AvatarProps> & {
   Image: typeof Image
   Status: typeof Status
@@ -172,10 +156,6 @@ const UserAvatar = (({
   )
 }) as UserAvatarComponent
 
-/* =======================
-   Attach sub-components
-======================= */
-
 UserAvatar.Image = Image
 UserAvatar.Status = Status
 UserAvatar.Content = Content
@@ -183,10 +163,6 @@ UserAvatar.Label = Label
 UserAvatar.Description = Description
 
 export default UserAvatar
-
-/* =======================
-   Styles
-======================= */
 
 const styles = StyleSheet.create({
   container: {

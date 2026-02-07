@@ -23,13 +23,25 @@ export const lightTheme: AppTheme = {
     onPrimary: '#FFFFFF',
     primaryContainer: '#D1FAE5',
 
-    secondary: '#3B82F6',
+    secondary: '#2563EB',
     onSecondary: '#FFFFFF',
     secondaryContainer: '#DBEAFE',
 
-    tertiary: '#8B5CF6',
+    tertiary: '#7C3AED',
     onTertiary: '#FFFFFF',
     tertiaryContainer: '#EDE9FE',
+
+    quaternary: '#EC4899',
+    onQuaternary: '#FFFFFF',
+    quaternaryContainer: '#FCE7F3',
+
+    quinary: '#92400E',
+    onQuinary: '#FFFFFF',
+    quinaryContainer: '#FEF3C7',
+
+    senary: '#06B6D4',
+    onSenary: '#FFFFFF',
+    senaryContainer: '#CFFAFE',
 
     warning: '#F59E0B',
     onWarning: '#FFFFFF',
@@ -39,9 +51,9 @@ export const lightTheme: AppTheme = {
     onError: '#FFFFFF',
     errorContainer: '#FEE2E2',
 
-    success: '#10B981',
+    success: '#22C55E',
     onSuccess: '#FFFFFF',
-    successContainer: '#D1FAEF',
+    successContainer: '#DCFCE7',
 
     backdrop: '#00000066',
     modal: '#FFFFFF',
@@ -54,7 +66,7 @@ export const darkTheme: AppTheme = {
   colors: {
     text: '#F2F2F7',
     tint: '#34D399',
-    icon: '#8E8E93',
+    icon: '#98989D',
 
     background: '#0D0A18',
     onBackground: '#F2F2F7',
@@ -70,28 +82,40 @@ export const darkTheme: AppTheme = {
     outline: '#38383A',
     outlineVariant: '#48484A',
 
-    primary: '#10B981',
-    onPrimary: '#FFFFFF',
+    primary: '#34D399',
+    onPrimary: '#00382A',
     primaryContainer: '#064E3B',
 
     secondary: '#60A5FA',
-    onSecondary: '#FFFFFF',
+    onSecondary: '#0B1F44',
     secondaryContainer: '#1E3A8A',
 
     tertiary: '#A78BFA',
-    onTertiary: '#FFFFFF',
+    onTertiary: '#2E1065',
     tertiaryContainer: '#4C1D95',
 
+    quaternary: '#FB7185',
+    onQuaternary: '#4C0519',
+    quaternaryContainer: '#881337',
+
+    quinary: '#D97706',
+    onQuinary: '#2A1401',
+    quinaryContainer: '#78350F',
+
+    senary: '#22D3EE',
+    onSenary: '#042F3E',
+    senaryContainer: '#083344',
+
     warning: '#FBBF24',
-    onWarning: '#000000',
+    onWarning: '#2A1401',
     warningContainer: '#451A03',
 
     error: '#F87171',
-    onError: '#FFFFFF',
+    onError: '#450A0A',
     errorContainer: '#7F1D1D',
 
-    success: '#34D399',
-    onSuccess: '#FFFFFF',
+    success: '#4ADE80',
+    onSuccess: '#00382A',
     successContainer: '#064E3B',
 
     backdrop: '#000000AA',

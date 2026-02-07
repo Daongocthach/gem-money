@@ -8,10 +8,12 @@ import {
   TextInputComponent
 } from '@/components'
 import { IncomeFormValues } from '@/types'
+import { useTranslation } from 'react-i18next'
 import { useIncomeMutation } from './hooks/use-income-mutation'
 
 
 export default function AddIncomeForm() {
+  const { t } = useTranslation()
 
   const {
     control,
@@ -36,7 +38,7 @@ export default function AddIncomeForm() {
 
   return (
     <ColumnComponent gap={15} style={{ padding: 16 }}>
-      <TextComponent text='add new income' type="title" textAlign="center" />
+      <TextComponent text='add_new_income' type="title" textAlign="center" />
 
       <Controller
         control={control}
@@ -70,7 +72,7 @@ export default function AddIncomeForm() {
         render={({ field: { value, onChange } }) => (
           <TextInputComponent
             label="note"
-            placeholder="ex: february salary"
+            placeholder={t('ex') + ': Lương tháng '+ new Date().getMonth()}
             value={value}
             onChangeText={onChange}
             outline
@@ -86,7 +88,7 @@ export default function AddIncomeForm() {
           <DateTimePicker
             mode='date'
             label='date'
-            placeholder='select date'
+            placeholder='select_date'
             dateTime={value}
             setDateTime={onChange}
             hideClear
@@ -96,7 +98,7 @@ export default function AddIncomeForm() {
       />
 
       <ButtonComponent
-        textProps={{ text: 'save income' }}
+        textProps={{ text: 'save_income' }}
         onPress={handleSubmit((data) => createIncome(data))}
         disabled={!isValid}
         loading={isCreating}

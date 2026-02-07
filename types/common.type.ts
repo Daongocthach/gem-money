@@ -89,3 +89,14 @@ export type TableColumn<T = any> = {
 
 
 export type SyncStatus = 'pending' | 'synced' | 'error'
+
+export type PieDataProps = Array<{
+  value: number
+  color: string
+  text: string
+}>
+
+export type BarDataProps = {
+  value: number
+  label: string
+}

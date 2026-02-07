@@ -23,7 +23,7 @@ export default function JarsScreen() {
   const router = useRouter()
   const { t } = useTranslation()
   const { userData } = useStore()
-  const { openSheet, closeSheet } = useAppBottomSheet()
+  const { openSheet } = useAppBottomSheet()
 
   const {
     jars,
@@ -45,53 +45,78 @@ export default function JarsScreen() {
   return (
     <Container>
       <ColumnComponent gap={20} style={{ paddingTop: 5 }}>
-        <RowComponent justify="space-between" alignItems="flex-start">
-          <ColumnComponent gap={5}>
+
+        <ColumnComponent gap={10}>
+          <RowComponent justify="space-between" alignItems="flex-start">
             <TextComponent
-              text={t("good morning") + ", " + (userData?.full_name || '')}
+              text={t("welcome_back") + ", " + (userData?.full_name || '')}
               type="label"
               size={15}
             />
-            <RowComponent gap={10} onPress={handleOpenAddIncome}>
-              <TextComponent
-                text={t("total left") + ": "}
-                type="display"
-              />
-              <TextComponent
-                text={formatCurrency(totalBalance)}
-                type="display"
-                fontWeight='bold'
-                color='success'
-              />
-              <IconComponent
-                name="CirclePlus"
-                color='primary'
-                size={20}
-              />
-            </RowComponent>
-            <TextComponent
-              text='safe to spend today based on your limits'
-              type="caption"
+            <ButtonComponent
+              isIconOnly
+              rightIconProps={{
+                name: "ChevronRight",
+                size: 18
+              }}
+              textProps={{
+                text: "all_incomes",
+              }}
+              onPress={() => router.push('/incomes')}
             />
-          </ColumnComponent>
-          <ButtonComponent
-            isIconOnly
-            rightIconProps={{
-              name: "ChevronRight",
-              color: 'primary',
-            }}
-            textProps={{
-              text: 'all incomes',
-              color: 'primary',
-            }}
-            onPress={() => router.push('/incomes')}
+          </RowComponent>
+          <RowComponent gap={10} onPress={handleOpenAddIncome}>
+            <TextComponent
+              text={t("incomes") + ": "}
+              type="display"
+            />
+            <TextComponent
+              text={formatCurrency(totalBalance)}
+              type="display"
+              fontWeight='bold'
+              color='success'
+            />
+            <IconComponent
+              name="CirclePlus"
+              color='primary'
+              size={20}
+            />
+          </RowComponent>
+          <TextComponent
+            text="safe_to_spend_today_based_on_your_limits"
+            type="caption"
           />
-        </RowComponent>
+        </ColumnComponent>
 
         <FlatListComponent
           data={jars}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }: { item: Jar }) => <JarCard {...item} />}
+          ListHeaderComponent={
+            <RowComponent>
+              <ButtonComponent
+                iconProps={{
+                  name: "CircleFadingPlus"
+                }}
+                textProps={{
+                  text: "new_jar",
+                }}
+                buttonStyle={{ padding: 8 }}
+                onPress={() => router.push('/incomes')}
+              />
+              <ButtonComponent
+                iconProps={{
+                  name: "SquarePen"
+                }}
+                textProps={{
+                  text: "edit_jar",
+                }}
+                buttonStyle={{ padding: 8 }}
+                onPress={() => router.push('/incomes')}
+              />
+
+            </RowComponent>
+          }
           onRefresh={refetch}
           refreshing={isRefetching}
           isLoading={isLoading}
@@ -102,6 +127,6 @@ export default function JarsScreen() {
           columnWrapperStyle={{ gap: 10 }}
         />
       </ColumnComponent>
-    </Container>
+    </Container >
   )
 }

@@ -68,7 +68,7 @@ const Header = ({ title }: HeaderProps) => {
         <ButtonComponent
           outline
           textProps={{
-            text: 'Synced',
+            text: 'synced',
             size: 8,
             fontWeight: 'bold',
           }}

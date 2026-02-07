@@ -1,5 +1,6 @@
 export * from './use-camera-permission'
 export * from './use-countdown'
+export * from './use-date-time-labels'
 export * from './use-debounce'
 export * from './use-flat-list-scroll-to-top'
 export * from './use-get-color-by-key'

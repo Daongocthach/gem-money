@@ -21,7 +21,6 @@ export const JarsQuery = {
   },
 
   updateBalance: async (db: SQLiteDatabase, id: string, amount: number) => {
-    // Dùng để cộng/trừ tiền trực tiếp vào hũ
     return await db.runAsync(
       'UPDATE jars SET current_balance = current_balance + ?, updated_at = ? WHERE id = ?',
       [amount, Date.now(), id]
@@ -36,11 +35,25 @@ export const JarsQuery = {
   },
 
   updateAllTargetBalances: async (db: SQLiteDatabase, totalTarget: number) => {
-    // Tính toán target_balance cho từng hũ dựa trên tỷ lệ %
-    // target_balance = tổng_mục_tiêu * (phần_trăm / 100)
     return await db.runAsync(
       'UPDATE jars SET target_balance = ? * (percentage / 100.0), updated_at = ?',
       [totalTarget, Date.now()]
+    )
+  },
+
+  getSpendingPieData: async (db: SQLiteDatabase) => {
+    return await db.getAllAsync<{
+      value: number,
+      text: string,
+      color: string
+    }>(
+      `SELECT 
+          COALESCE(SUM(t.amount), 0) as value, 
+          j.name as text, 
+          j.color as color
+      FROM jars j
+      LEFT JOIN transactions t ON j.id = t.jar_id AND t.is_deleted = 0
+      GROUP BY j.id`
     )
   },
 }

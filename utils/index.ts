@@ -96,17 +96,18 @@ export const formatNumber = (amount: number | string | undefined | null): string
     return new Intl.NumberFormat('vi-VN').format(value || 0)
 }
 
-// Ví dụ: 83000 -> 83k, 8300 -> 8.3k, 1500000 -> 1500k
+// Ví dụ: 1000000 -> 1.000k, 830000 -> 830k, 83500 -> 83.5k
 export const formatK = (amount: number | string | undefined | null): string => {
   const num = typeof amount === 'string' ? parseFloat(amount) : amount
-  
-  if (!num || isNaN(num)) return '0k'
+  if (num === null || num === undefined || isNaN(num as number)) return '0k'
 
-  const kValue = num / 1000
+  const kValue = (num as number) / 1000
 
-  const formatted = Number.isInteger(kValue) 
-    ? kValue.toString() 
-    : kValue.toFixed(1)
+  const roundedValue = Number.isInteger(kValue) 
+    ? kValue 
+    : Math.round(kValue * 10) / 10
+
+  const formatted = roundedValue.toLocaleString('de-DE') 
 
   return `${formatted}k`
 }

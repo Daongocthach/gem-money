@@ -3,17 +3,17 @@ import React from 'react'
 import { Controller, useForm } from 'react-hook-form'
 
 import {
-    ButtonComponent,
-    ColumnComponent,
-    DateTimePicker,
-    TextComponent,
-    TextInputComponent
+  ButtonComponent,
+  ColumnComponent,
+  DateTimePicker,
+  TextComponent,
+  TextInputComponent
 } from '@/components'
-import { TransactionFormValues } from '@/types'; // Bạn định nghĩa type này tương tự IncomeFormValues
+import { TransactionFormValues } from '@/types'
 import { useTransactionMutations } from './hooks/use-transaction-mutation'
 interface Props {
     jarId: string;
-    jarName?: string; // Để hiển thị tên hũ cho người dùng biết họ đang chi ở hũ nào
+    jarName?: string;
     onSuccess?: () => void;
 }
 
@@ -55,10 +55,10 @@ export default function AddTransactionForm({ jarId, jarName, onSuccess }: Props)
   return (
     <ColumnComponent gap={15} style={{ padding: 16 }}>
       <ColumnComponent gap={4}>
-         <TextComponent text='Add Expense' type="title" textAlign="center" />
+         <TextComponent text='add expense' type="title" textAlign="center" />
          {jarName && (
              <TextComponent 
-                text={`Spending from: ${jarName}`} 
+                text={`spending from: ${jarName}`} 
                 type="caption" 
                 textAlign="center" 
                 color="primary"
@@ -70,12 +70,12 @@ export default function AddTransactionForm({ jarId, jarName, onSuccess }: Props)
         control={control}
         name="amount"
         rules={{
-          required: 'Please enter an amount',
-          validate: value => parseFloat(value.toString()) > 0 || 'Amount must be greater than 0'
+          required: 'please enter an amount',
+          validate: value => parseFloat(value.toString()) > 0 || 'amount must be greater than 0'
         }}
         render={({ field: { value, onChange } }) => (
           <TextInputComponent
-            label="Amount"
+            label="amount"
             placeholder="0"
             keyboardType="numeric"
             value={value}
@@ -97,8 +97,8 @@ export default function AddTransactionForm({ jarId, jarName, onSuccess }: Props)
         name="note"
         render={({ field: { value, onChange } }) => (
           <TextInputComponent
-            label="Note"
-            placeholder="What did you spend on?"
+            label="note"
+            placeholder="what did you spend on?"
             value={value}
             onChangeText={onChange}
             outline

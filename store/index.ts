@@ -26,7 +26,7 @@ const useStore = create<StoreState>()(
     persist(
       (set) => ({
         darkMode: false,
-        currentLanguage: "en",
+        currentLanguage: "vi",
         isLoading: false,
         isLoggedIn: false,
         userData: null,

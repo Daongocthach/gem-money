@@ -43,7 +43,8 @@ const screens = [
   'no-access',
   'profile',
   'notifications',
-  'incomes'
+  'incomes',
+  'transactions',
 ]
 
 const authenScreens = [
