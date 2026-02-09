@@ -1,15 +1,15 @@
 
 import {
-  addYears,
-  endOfYear,
-  format,
-  startOfYear
+    addYears,
+    endOfYear,
+    format,
+    startOfYear
 } from "date-fns"
 import { useMemo, useState } from "react"
 import { useTranslation } from "react-i18next"
 import {
-  Pressable,
-  ViewProps
+    Pressable,
+    ViewProps
 } from "react-native"
 
 import { useLocale, useTheme } from "@/hooks"
@@ -116,7 +116,7 @@ export default function DateTimePicker({
         </TextComponent>
         {!hideClear && dateTime &&
           <ButtonComponent
-            isIconOnly
+            mode="text"
             iconProps={{ name: "X", size: 16, color: colors.icon }}
           />
         }

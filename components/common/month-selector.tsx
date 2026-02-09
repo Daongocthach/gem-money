@@ -103,7 +103,7 @@ export default function MonthSelector({
         <ColumnComponent gap={20}>
             <RowComponent justify='space-between'>
                 <ButtonComponent
-                    isIconOnly
+                    mode="text"
                     iconProps={{
                         name: 'ChevronLeft',
                         size: 30,
@@ -120,7 +120,7 @@ export default function MonthSelector({
                 />
 
                 <ButtonComponent
-                    isIconOnly
+                    mode="text"
                     iconProps={{
                         name: 'ChevronRight',
                         size: 30,

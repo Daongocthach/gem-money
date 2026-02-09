@@ -1,81 +1,206 @@
-import React, { useMemo, useRef, useState } from 'react'
+import React, { createContext, ReactNode, useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { View, ViewProps } from 'react-native'
+import { StyleSheet, View, ViewProps } from 'react-native'
 import { Dropdown } from 'react-native-element-dropdown'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import { FONT_FAMILIES, windowHeight } from '@/constants'
 import { useTheme } from "@/hooks"
+import i18next from '@/locales'
 import { DropdownProps } from '@/types'
 
-import i18next from '@/locales'
 import ButtonComponent from './button-component'
 import ColumnComponent from './column-component'
 import Icon from './icon-component'
 import RowComponent from './row-component'
 import TextComponent from './text-component'
-import TextInputComponent from './text-input-component'
 
-interface InlineDropdownProps {
-  selects: DropdownProps[]
-  selected: string | number
-  setSelected: (value: any) => void
-  label?: string
-  placeholder?: string
-  style?: ViewProps['style']
-  viewStyle?: ViewProps['style']
-  isClearable?: boolean
-  isSearch?: boolean
-  isSearchCustom?: boolean
-  searchCustomValue?: string
-  setSearchCustomValue?: (value: string) => void
-  searchPlaceholder?: string
-  disabled?: boolean
-  onOpen?: () => void
-  hideFooter?: boolean
-  errorMessage?: string
-  loadMore?: () => void
-  isLoading?: boolean
-  isFetchingNextPage?: boolean
-  isError?: boolean
-  hasMore?: boolean
-  autoScroll?: boolean
+interface DropdownCtx {
+  dataTranslated: DropdownProps[]
+  selected: string
+  setSelected: (value: string) => void
+  disabled: boolean
+  safeValue: string
 }
 
-export default function InlineDropdown({
+const DropdownCtx = createContext<DropdownCtx | null>(null)
+
+function useDropdownCtx() {
+  const ctx = useContext(DropdownCtx)
+  if (!ctx) throw new Error("Dropdown sub-components must be used within <InlineDropdown />")
+  return ctx
+}
+
+
+function Label({ text }: { text?: string }) {
+  if (!text) return null
+  return <TextComponent text={text} type="label" style={{ marginBottom: 4 }} />
+}
+
+function Clear({ onPress }: { onPress?: () => void }) {
+  const { setSelected, safeValue } = useDropdownCtx()
+
+  if (!safeValue) return null
+
+  const handleClear = () => {
+    setSelected('')
+    onPress?.()
+  }
+
+  return (
+    <View style={styles.clearContainer}>
+      <ButtonComponent
+        mode="text"
+        iconProps={{ name: 'X', size: 20 }}
+        onPress={handleClear}
+      />
+    </View>
+  )
+}
+
+interface MainInputProps {
+  placeholder?: string
+  isClearable?: boolean
+  isLoading?: boolean
+  style?: ViewProps['style']
+  onOpen?: () => void
+  autoScroll?: boolean
+  isSearch?: boolean
+  searchPlaceholder?: string
+  flatListProps?: any
+}
+
+function MainInput({
+  placeholder = 'select an option',
+  isClearable,
+  isLoading,
+  style,
+  onOpen,
+  autoScroll,
+  isSearch,
+  searchPlaceholder = 'search',
+  flatListProps
+}: MainInputProps) {
+  const { colors } = useTheme()
+  const { t } = useTranslation()
+  const {
+    dataTranslated,
+    selected,
+    setSelected,
+    disabled,
+    safeValue
+  } = useDropdownCtx()
+
+  return (
+    <Dropdown
+      disable={disabled}
+      data={dataTranslated}
+      labelField="label"
+      valueField="value"
+      value={safeValue}
+      placeholder={t(placeholder)}
+      autoScroll={autoScroll}
+      search={isSearch}
+      onChange={(item: DropdownProps) => setSelected(item.value)}
+      onFocus={() => { onOpen?.() }}
+      style={[
+        styles.dropdown,
+        {
+          borderColor: colors.outlineVariant,
+          backgroundColor: colors.background,
+          opacity: disabled ? 0.5 : 1
+        },
+        style
+      ]}
+      placeholderStyle={{
+        color: colors.onCardDisabled,
+        fontSize: 13,
+        fontFamily: FONT_FAMILIES.REGULAR
+      }}
+      selectedTextStyle={{
+        color: colors.onCardVariant,
+        fontSize: 13,
+        fontFamily: FONT_FAMILIES.REGULAR,
+        paddingRight: 30
+      }}
+      selectedTextProps={{
+        numberOfLines: 1,
+        allowFontScaling: false
+      }}
+      searchPlaceholder={t(searchPlaceholder)}
+      inputSearchStyle={{
+        color: colors.onBackground,
+        borderRadius: 8
+      }}
+      containerStyle={{
+        maxHeight: windowHeight * 0.6,
+        borderRadius: 8,
+        backgroundColor: colors.background,
+        borderWidth: 1,
+        borderColor: colors.cardDisabled,
+      }}
+      activeColor={colors.cardVariant}
+      renderRightIcon={() => (
+        <RowComponent gap={10}>
+          {!isLoading && isClearable && !!safeValue && (
+            <ButtonComponent
+              mode="text"
+              iconProps={{ name: 'X' }}
+              onPress={() => setSelected('')}
+            />
+          )}
+          <Icon name="ChevronDown" size={18} color="onCard" />
+        </RowComponent>
+      )}
+      renderItem={(item) => {
+        const isSelected = item.value === safeValue
+        return (
+          <RowComponent
+            alignItems="center"
+            justify="space-between"
+            style={[
+              styles.item,
+              {
+                borderBottomColor: colors.card
+              }
+            ]}
+          >
+            <TextComponent
+              text={item.label}
+              color={isSelected ? "primary" : "onBackground"}
+              style={{ flexShrink: 1 }}
+            />
+            {isSelected && <Icon name="Check" size={16} color="primary" />}
+          </RowComponent>
+        )
+      }}
+      flatListProps={flatListProps}
+    />
+  )
+}
+
+function ErrorMessage({ message }: { message?: string }) {
+  if (!message) return null
+  return <TextComponent type='caption' text={message} color='error' style={{ marginTop: 4 }} />
+}
+
+interface InlineDropdownProps {
+  children: ReactNode
+  selects: DropdownProps[]
+  selected: string
+  setSelected: (value: string) => void
+  disabled?: boolean
+  viewStyle?: ViewProps['style']
+}
+
+function InlineDropdown({
+  children,
   selects,
   selected,
   setSelected,
-  label,
-  placeholder = 'select an option',
-  style,
-  viewStyle,
-  isClearable = false,
-  isSearch = false,
-  isSearchCustom = false,
-  searchCustomValue,
-  setSearchCustomValue,
-  searchPlaceholder = 'search',
   disabled = false,
-  onOpen,
-  hideFooter = false,
-  errorMessage,
-  loadMore,
-  isLoading = false,
-  isFetchingNextPage = false,
-  hasMore = false,
-  isError = false,
-  autoScroll = false,
+  viewStyle,
 }: InlineDropdownProps) {
-  const insets = useSafeAreaInsets()
   const { t } = useTranslation()
-  const { colors } = useTheme()
-  const triggerRef = useRef<View>(null)
-  const [triggerLayout, setTriggerLayout] = useState<{
-    y: number
-    height: number
-  }>({ y: 0, height: 0 })
-  const [dropdownPosition, setDropdownPosition] = useState<'top' | 'bottom'>('bottom')
 
   const dataTranslated = useMemo(
     () => selects.map(data => ({ ...data, label: i18next.exists(data.label) ? t(data.label) : data.label })),
@@ -86,190 +211,55 @@ export default function InlineDropdown({
     return dataTranslated.some(data => data.value === selected) ? selected : ''
   }, [dataTranslated, selected])
 
-  const updateDropdownPosition = () => {
-    triggerRef.current?.measureInWindow((_, y, __, h) => {
-      setTriggerLayout({ y, height: h })
-
-      const centerY = y + h / 2
-      setDropdownPosition(
-        centerY > (windowHeight - insets.top - insets.bottom) / 2
-          ? 'top'
-          : 'bottom'
-      )
-    })
-  }
-
-  const maxDropdownHeight = dropdownPosition === 'top'
-    ? triggerLayout.y - insets.top - 8
-    : windowHeight - triggerLayout.y - triggerLayout.height - insets.bottom - 8
+  const childrenArray = React.Children.toArray(children)
+  const clearButton = childrenArray.filter(
+    (child: any) => child.type === Clear
+  )
 
   return (
-    <ColumnComponent gap={4} style={viewStyle}>
-      {label && (
-        <TextComponent
-          text={label}
-          type="label"
-        />
-      )}
-
-      <View
-        style={{ position: 'relative' }}
-        ref={triggerRef}
-        onLayout={() => {
-          triggerRef.current?.measureInWindow((x, y, w, h) => {
-            const triggerCenterY = y + h / 2
-            const isBelowHalf = triggerCenterY > windowHeight / 2
-            setDropdownPosition(isBelowHalf ? 'top' : 'bottom')
-          })
-        }}
-      >
-        <Dropdown
-          disable={disabled}
-          data={dataTranslated}
-          labelField="label"
-          valueField="value"
-          value={safeValue}
-          placeholder={t(placeholder)}
-          autoScroll={autoScroll}
-          search={isSearch}
-          dropdownPosition={dropdownPosition}
-          onChange={(item: DropdownProps) => setSelected(item.value)}
-          style={[
-            {
-              height: 44,
-              borderWidth: 1,
-              borderColor: colors.outlineVariant,
-              borderRadius: 16,
-              paddingHorizontal: 10,
-              paddingVertical: 10,
-              backgroundColor: colors.background,
-              opacity: disabled ? 0.5 : 1,
-            },
-            style as any,
-          ]}
-          placeholderStyle={{
-            color: colors.onCardDisabled,
-            fontSize: 13,
-            fontFamily: FONT_FAMILIES.REGULAR
-          }}
-          selectedTextStyle={{
-            color: colors.onCardVariant,
-            fontSize: 13,
-            fontFamily: FONT_FAMILIES.REGULAR,
-            paddingRight: 30,
-          }}
-          selectedTextProps={{ numberOfLines: 1, allowFontScaling: false }}
-          searchPlaceholder={t(searchPlaceholder)}
-          inputSearchStyle={{
-            color: colors.onBackground,
-            borderRadius: 16,
-          }}
-          containerStyle={{
-            maxHeight: Math.max(120, maxDropdownHeight),
-            borderRadius: 16,
-            backgroundColor: colors.background,
-            borderWidth: 1,
-            borderColor: colors.cardDisabled,
-          }}
-          activeColor={colors.cardVariant}
-          renderRightIcon={() => (
-            <RowComponent gap={10}>
-              {!isLoading && isClearable && !!safeValue && (
-                <ButtonComponent
-                  isIconOnly
-                  iconProps={{ name: 'X' }}
-                  onPress={() => setSelected('')}
-                />
-              )}
-              <Icon name="ChevronDown" size={18} color="onCard" />
-            </RowComponent>
-          )}
-          onFocus={() => {
-            updateDropdownPosition()
-            onOpen?.()
-          }}
-          flatListProps={{
-            onEndReached: () => loadMore?.(),
-            onEndReachedThreshold: 0.5,
-            stickyHeaderIndices: isSearchCustom ? [0] : [],
-            ListHeaderComponent: isSearchCustom ? (
-              <View style={{ padding: 4 }}>
-                <TextInputComponent
-                  value={searchCustomValue}
-                  onChangeText={setSearchCustomValue}
-                  placeholder={t(searchPlaceholder)}
-                >
-                  <TextInputComponent.RightGroup>
-                    <TextInputComponent.Clear />
-                  </TextInputComponent.RightGroup>
-                </TextInputComponent>
-              </View>
-            ) : null,
-            ListEmptyComponent: hideFooter ? null :
-              (!isLoading && selects?.length === 0) ? (
-                <TextComponent
-                  textAlign='center'
-                  type='caption'
-                  text={isError ? 'error loading data' : 'no data found'}
-                  style={{ marginVertical: 16 }}
-                />
-              ) : null,
-            ListFooterComponent: hideFooter ? null :
-              (isLoading && selects?.length === 0) ? (
-                <TextComponent
-                  textAlign='center'
-                  type='caption'
-                  text="loading"
-                  style={{ marginVertical: 16 }}
-                />
-              ) : (isFetchingNextPage) ? (
-                <TextComponent
-                  textAlign='center'
-                  type='caption'
-                  text="loading more"
-                  style={{ marginVertical: 16 }}
-                />
-              ) : (!hasMore && selects?.length > 0) ? (
-                <TextComponent
-                  textAlign='center'
-                  type='caption'
-                  text="end of page"
-                  style={{ marginVertical: 16 }}
-                />
-              ) : null
-          }}
-          renderItem={(item) => {
-            const isSelected = item.value === safeValue
-
-            return (
-              <RowComponent
-                alignItems="center"
-                justify="space-between"
-                style={{
-                  paddingVertical: 12,
-                  paddingHorizontal: 12,
-                  borderBottomWidth: 1,
-                  borderBottomColor: colors.card,
-                }}
-              >
-                <TextComponent
-                  text={item.label}
-                  color={isSelected ? "primary" : "onBackground"}
-                  style={{ flexShrink: 1 }}
-                />
-                {isSelected && <Icon name="Check" size={16} color="primary" />}
-              </RowComponent>
-            )
-          }}
-        />
-      </View>
-      {errorMessage && (
-        <TextComponent
-          type='caption'
-          text={errorMessage}
-          color='error'
-        />
-      )}
-    </ColumnComponent>
+    <DropdownCtx.Provider
+      value={{
+        dataTranslated,
+        selected,
+        setSelected,
+        disabled,
+        safeValue
+      }}
+    >
+      <ColumnComponent style={viewStyle}>
+        <View style={{ position: 'relative' }}>
+          {children}
+        </View>
+      </ColumnComponent>
+    </DropdownCtx.Provider>
   )
 }
+
+InlineDropdown.Label = Label
+InlineDropdown.Input = MainInput
+InlineDropdown.Error = ErrorMessage
+InlineDropdown.Clear = Clear
+
+export default InlineDropdown
+
+const styles = StyleSheet.create({
+  dropdown: {
+    height: 44,
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+  },
+  item: {
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderBottomWidth: 1,
+  },
+  clearContainer: {
+    position: 'absolute',
+    right: 35,
+    top: 22,
+    bottom: 0,
+    justifyContent: 'center',
+    zIndex: 10,
+  },
+})

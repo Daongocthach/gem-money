@@ -22,6 +22,16 @@ export default function AndroidDatePicker({
     const { colors } = useTheme()
     const { monthLabels } = useDateTimeLabels()
 
+    const getDaysInMonth = (
+        year: number,
+        month: number
+    ) => new Date(year, month + 1, 0).getDate()
+
+    const [selectedYear, setSelectedYear] = useState(value.getFullYear())
+    const [selectedMonth, setSelectedMonth] = useState(value.getMonth())
+    const [selectedDay, setSelectedDay] = useState(value.getDate())
+
+
     const yearsData = useMemo(() => {
         const startYear = minimumDate ? minimumDate.getFullYear() : 2000
         const endYear = maximumDate ? maximumDate.getFullYear() : 2050
@@ -32,25 +42,44 @@ export default function AndroidDatePicker({
     }, [minimumDate, maximumDate])
 
     const monthsData = useMemo(() => {
-        return monthLabels.map((item, index) => ({
-            label: item.full,
-            value: index
-        }))
-    }, [monthLabels])
+        const currentYear = value.getFullYear()
+        let startMonth = 0
+        let endMonth = 11
 
-    const getDaysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate()
+        if (minimumDate && currentYear === minimumDate.getFullYear()) {
+            startMonth = minimumDate.getMonth()
+        }
+        if (maximumDate && currentYear === maximumDate.getFullYear()) {
+            endMonth = maximumDate.getMonth()
+        }
 
-    const [selectedYear, setSelectedYear] = useState(value.getFullYear())
-    const [selectedMonth, setSelectedMonth] = useState(value.getMonth())
-    const [selectedDay, setSelectedDay] = useState(value.getDate())
+        return monthLabels
+            .map((item, index) => ({ label: item.full, value: index }))
+            .filter(m => m.value >= startMonth && m.value <= endMonth)
+    }, [value.getFullYear(), minimumDate, maximumDate, monthLabels])
+
 
     const daysData = useMemo(() => {
-        const numDays = getDaysInMonth(selectedYear, selectedMonth)
-        return Array.from({ length: numDays }, (_, index) => ({
-            label: (index + 1).toString(),
-            value: index + 1
-        }))
-    }, [selectedYear, selectedMonth])
+        const currentYear = value.getFullYear()
+        const currentMonth = value.getMonth()
+        const maxDaysInMonth = getDaysInMonth(currentYear, currentMonth)
+
+        let startDay = 1
+        let endDay = maxDaysInMonth
+
+        if (minimumDate && currentYear === minimumDate.getFullYear() && currentMonth === minimumDate.getMonth()) {
+            startDay = minimumDate.getDate()
+        }
+        if (maximumDate && currentYear === maximumDate.getFullYear() && currentMonth === maximumDate.getMonth()) {
+            endDay = maximumDate.getDate()
+        }
+
+        const days = []
+        for (let i = startDay; i <= endDay; i++) {
+            days.push({ label: i.toString(), value: i })
+        }
+        return days
+    }, [value.getFullYear(), value.getMonth(), minimumDate, maximumDate])
 
     const handleDateChange = (year: number, month: number, day: number) => {
         const newDate = new Date(value)

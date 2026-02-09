@@ -106,7 +106,7 @@ export default function SingleListSelector({
 
                 {!hideClear && selected &&
                     <ButtonComponent
-                        isIconOnly
+                        mode="text"
                         iconProps={{ name: "X", size: 16, color: colors.icon }}
                         onPress={handleClear}
                     />

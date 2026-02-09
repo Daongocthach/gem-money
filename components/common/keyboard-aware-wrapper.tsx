@@ -1,11 +1,9 @@
 import React from "react"
 import {
-  Keyboard,
   Platform,
   StyleProp,
-  TouchableWithoutFeedback,
   View,
-  ViewStyle,
+  ViewStyle
 } from "react-native"
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view"
 
@@ -26,20 +24,27 @@ export default function KeyboardAwareWrapper({
 }: Props) {
   return (
     <KeyboardAwareScrollView
+      // Giúp bấm vào nút mà không bị mất focus/phải bấm 2 lần
+      keyboardShouldPersistTaps="handled" 
+      
+      // Quan trọng: Cho phép scroll kể cả khi bàn phím đang mở
+      keyboardDismissMode="on-drag" 
+      
       enableOnAndroid={true}
       enableAutomaticScroll={true}
       extraScrollHeight={Platform.OS === "android" ? extraScrollHeight : 90}
       extraHeight={Platform.OS === "android" ? extraHeight : 80}
-      keyboardShouldPersistTaps="handled"
       contentContainerStyle={[
         { paddingBottom: 120 },
         contentContainerStyle,
       ]}
       style={style}
     >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View>{children}</View>
-      </TouchableWithoutFeedback>
+      {/* Xóa bỏ TouchableWithoutFeedback ở đây. 
+         Nếu muốn chạm vùng trống để ẩn phím, keyboardShouldPersistTaps="handled" 
+         của ScrollView đã hỗ trợ phần lớn trải nghiệm này.
+      */}
+      <View>{children}</View>
     </KeyboardAwareScrollView>
   )
 }

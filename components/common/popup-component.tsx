@@ -1,8 +1,8 @@
 import {
-  ActivityIndicator,
-  Modal,
-  Pressable,
-  View
+    ActivityIndicator,
+    Modal,
+    Pressable,
+    View
 } from "react-native"
 
 import { windowHeight } from "@/constants"
@@ -96,7 +96,7 @@ const PopupComponent = ({
             onPress={onClose}
             iconProps={{ name: 'X', size: 20 }}
             style={{ alignSelf: 'flex-end' }}
-            ghost
+            mode="text"
           />
 
           {modalTitle && (
@@ -141,7 +141,7 @@ const PopupComponent = ({
               {isYesCancelButton && (
                 <RowComponent gap={10} style={{ marginVertical: 15 }}>
                   <ButtonComponent
-                    isIconOnly
+                    mode="text"
                     textProps={{ 
                       text: "cancel", 
                       color: 'onCardDisabled',
@@ -152,7 +152,7 @@ const PopupComponent = ({
                     style={{ flex: 1 }}
                   />
                   <ButtonComponent
-                    isIconOnly
+                    mode="text"
                     backgroundColor={buttonColor}
                     onPress={handleConfirm}
                     textProps={{ 

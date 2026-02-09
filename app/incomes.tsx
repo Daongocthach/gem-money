@@ -42,7 +42,7 @@ export default function IncomesScreen() {
                 menuChildren={() => (
                     <ColumnComponent gap={24}>
                         <ButtonComponent
-                            isIconOnly
+                            mode="text"
                             iconProps={{
                                 name: 'Pencil',
                                 size: 14,
@@ -58,7 +58,7 @@ export default function IncomesScreen() {
                             }}
                         />
                         <ButtonComponent
-                            isIconOnly
+                            mode="text"
                             iconProps={{
                                 name: 'Trash2',
                                 color: 'error',

@@ -1,12 +1,12 @@
 import {
-  ButtonComponent,
-  ColumnComponent,
-  Container,
-  IconComponent,
-  MenuComponent,
-  RowComponent,
-  SectionListComponent,
-  TextComponent
+    ButtonComponent,
+    ColumnComponent,
+    Container,
+    IconComponent,
+    MenuComponent,
+    RowComponent,
+    SectionListComponent,
+    TextComponent
 } from '@/components'
 import { useHistoryScreen } from '@/components/history/hooks/use-history'
 import SpendingPieChart from '@/components/history/spending-pie-chart'
@@ -56,7 +56,7 @@ export default function HistoryScreen() {
         menuChildren={() => (
           <ColumnComponent gap={24}>
             <ButtonComponent
-              isIconOnly
+              mode="text"
               iconProps={{ name: 'Pencil', size: 14 }}
               textProps={{ text: 'edit' }}
               onPress={() => {
@@ -65,7 +65,7 @@ export default function HistoryScreen() {
               buttonStyle={{ justifyContent: 'flex-start' }}
             />
             <ButtonComponent
-              isIconOnly
+              mode="text"
               iconProps={{
                 name: 'Trash2',
                 color: 'error',

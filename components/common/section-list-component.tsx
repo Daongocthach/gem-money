@@ -1,113 +1,170 @@
-import React from 'react'
+import { useTheme } from "@/hooks"
+import React, { useEffect, useMemo, useRef } from 'react'
 import {
-    DefaultSectionT,
+    ListRenderItem,
     SectionList,
-    SectionListData,
     SectionListProps,
+    View
 } from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
-
 import RefreshControlComponent from './refresh-control-component'
-import Suspense from './suspense'
 import TextComponent from './text-component'
 
-interface SectionListComponentProps extends SectionListProps<any, DefaultSectionT> {
-    ref?: React.Ref<SectionList<any, DefaultSectionT>>
-    sections: SectionListData<any, DefaultSectionT>[]
+type AnySection = { title?: string; data: any[] }
+
+interface SectionListComponentProps
+    extends Omit<SectionListProps<any, AnySection>, 'sections' | 'renderItem' | 'keyExtractor'> {
+    sections: AnySection[]
     keyExtractor: (item: any, index: number) => string
-    renderItem: (info: { item: any; index: number; section: SectionListData<any, DefaultSectionT> }) => React.ReactElement | null
-    renderSectionHeader?: (info: { section: SectionListData<any, DefaultSectionT> }) => React.ReactElement | null
+    renderItem: ListRenderItem<any>
+    renderSectionHeader?: SectionListProps<any, AnySection>['renderSectionHeader']
     onRefresh?: () => void
     refreshing?: boolean
     loadMore?: () => void
+    hasNextPage?: boolean
     isLoading?: boolean
     isFetchingNextPage?: boolean
     isError?: boolean
-    hasMore?: boolean
-    hasBottomTabBar?: boolean
-    extraPaddingBottom?: number
-    contentContainerStyle?: SectionListProps<any, DefaultSectionT>['contentContainerStyle']
-    hideFooter?: boolean
+    stickySectionHeadersEnabled?: boolean
+    contentContainerStyle?: SectionListProps<any, AnySection>['contentContainerStyle']
+    onEndReachedThreshold?: number
 }
 
 export default function SectionListComponent({
-    ref,
-    sections = [],
+    sections,
     keyExtractor,
     renderItem,
     renderSectionHeader,
     onRefresh,
     refreshing = false,
     loadMore,
+    hasNextPage = false,
     isLoading = false,
     isFetchingNextPage = false,
     isError = false,
-    hasMore = false,
-    hasBottomTabBar = false,
-    extraPaddingBottom = 0,
+    stickySectionHeadersEnabled = true,
     contentContainerStyle,
-    hideFooter = false,
+    onEndReachedThreshold = 0.1,
     ...props
 }: SectionListComponentProps) {
-    const insets = useSafeAreaInsets()
-    
-    // Kiểm tra dữ liệu hợp lệ
-    const safeSections = Array.isArray(sections) ? sections : []
-    const isEmpty = safeSections.length === 0 || safeSections.every(s => s.data.length === 0)
+    const { colors } = useTheme()
+
+    const canLoadMoreRef = useRef(false)
+    const lastCalledCountRef = useRef(0)
+
+    const totalItems = useMemo(
+        () => sections.reduce((sum, section) => sum + (section.data?.length ?? 0), 0),
+        [sections]
+    )
+
+    useEffect(() => {
+        if (totalItems > lastCalledCountRef.current) {
+            canLoadMoreRef.current = true
+        }
+    }, [totalItems])
+
+    const handleEndReached = () => {
+        if (!loadMore) return
+        if (!hasNextPage) return
+        if (isFetchingNextPage) return
+        if (!canLoadMoreRef.current) return
+
+        if (lastCalledCountRef.current === totalItems) return
+
+        canLoadMoreRef.current = false
+        lastCalledCountRef.current = totalItems
+        loadMore()
+    }
+
+    const defaultHeader: SectionListProps<any, AnySection>['renderSectionHeader'] =
+        ({ section }) =>
+            section.title ? (
+                <View
+                    style={{
+                        paddingVertical: 8,
+                        paddingHorizontal: 12,
+                        backgroundColor: colors.background,
+                        borderRadius: 8
+                    }}
+                >
+                    <TextComponent text={section.title} />
+                </View>
+            ) : null
+
+
+    const ListEmptyComponent = useMemo(() => {
+        if (!isLoading && totalItems < 1) {
+            return (
+                <TextComponent
+                    textAlign='center'
+                    type='caption'
+                    text={isError ? 'error loading data' : 'no data found'}
+                    style={{ marginVertical: 16 }}
+                />
+            )
+        }
+        return null
+    }, [totalItems, isLoading, isError, colors.outlineVariant])
+
+    const ListFooterComponent = useMemo(() => {
+        if (totalItems === 0) return null;
+
+        if (isFetchingNextPage) {
+            return (
+                <TextComponent
+                    textAlign='center'
+                    type='caption'
+                    text="loading more"
+                    style={{ marginVertical: 16 }}
+                />
+            )
+        }
+
+        if (!hasNextPage) {
+            return (
+                <TextComponent
+                    textAlign='center'
+                    type='caption'
+                    text="end of page"
+                    style={{ marginVertical: 16 }}
+                />
+            )
+        }
+
+        return null;
+
+    }, [totalItems, isFetchingNextPage, hasNextPage, colors.outlineVariant]);
+
 
     return (
         <SectionList
-            ref={ref}
-            sections={safeSections}
+            sections={sections}
             keyExtractor={keyExtractor}
             renderItem={renderItem}
-            renderSectionHeader={renderSectionHeader}
-            stickySectionHeadersEnabled={true} // Tùy chọn giữ header ở trên cùng
+            renderSectionHeader={renderSectionHeader ?? defaultHeader}
+            stickySectionHeadersEnabled={stickySectionHeadersEnabled}
             refreshControl={
                 onRefresh ? (
                     <RefreshControlComponent
-                        refreshing={refreshing || isLoading}
-                        onRefresh={onRefresh}
+                        refreshing={refreshing}
+                        onRefresh={() => {
+                            lastCalledCountRef.current = 0
+                            canLoadMoreRef.current = false
+                            onRefresh()
+                        }}
                     />
                 ) : undefined
             }
-            onEndReached={loadMore}
-            onEndReachedThreshold={0.5}
-            ListEmptyComponent={
-                hideFooter ? null :
-                    (!isLoading && isEmpty) ? (
-                        <TextComponent
-                            textAlign='center'
-                            type='caption'
-                            text={isError ? 'Error loading data' : 'No data found'}
-                            style={{ marginVertical: 16 }}
-                        />
-                    ) : null
-            }
-            ListFooterComponent={
-                hideFooter ? null :
-                    (isLoading && isEmpty) ? (
-                        <Suspense />
-                    ) : (isFetchingNextPage) ? (
-                        <TextComponent
-                            textAlign='center'
-                            type='caption'
-                            text="Loading more..."
-                            style={{ marginVertical: 16 }}
-                        />
-                    ) : (!hasMore && !isEmpty) ? (
-                        <TextComponent
-                            textAlign='center'
-                            type='caption'
-                            text="End of list"
-                            style={{ marginVertical: 16 }}
-                        />
-                    ) : null
-            }
-            contentContainerStyle={[{
-                paddingHorizontal: 2,
-                paddingBottom: insets.bottom + (hasBottomTabBar ? 150 : 30) + extraPaddingBottom,
-            }, contentContainerStyle]}
+            onMomentumScrollBegin={() => {
+                canLoadMoreRef.current = true
+            }}
+            onEndReached={handleEndReached}
+            onEndReachedThreshold={onEndReachedThreshold}
+            ListEmptyComponent={ListEmptyComponent}
+            ListFooterComponent={ListFooterComponent}
+            contentContainerStyle={[
+                { paddingHorizontal: 2, gap: 8 },
+                contentContainerStyle,
+            ]}
             {...props}
         />
     )

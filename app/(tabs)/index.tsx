@@ -1,13 +1,13 @@
 import { useTranslation } from "react-i18next"
 
 import {
-  ButtonComponent,
-  ColumnComponent,
-  Container,
-  FlatListComponent,
-  IconComponent,
-  RowComponent,
-  TextComponent
+    ButtonComponent,
+    ColumnComponent,
+    Container,
+    FlatListComponent,
+    IconComponent,
+    RowComponent,
+    TextComponent
 } from "@/components"
 import AddIncomeForm from "@/components/incomes/add-income"
 import { useHomeScreen } from "@/components/jars/hooks/use-jars"
@@ -54,7 +54,7 @@ export default function JarsScreen() {
               size={15}
             />
             <ButtonComponent
-              isIconOnly
+              mode="text"
               rightIconProps={{
                 name: "ChevronRight",
                 size: 18

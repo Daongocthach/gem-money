@@ -1,5 +1,5 @@
 import { useTheme } from "@/hooks"
-import React, { ReactElement, ReactNode, useRef, useState } from "react"
+import React, { ReactElement, ReactNode, useState } from "react"
 import { Pressable, View, ViewStyle } from "react-native"
 import Popover from "react-native-popover-view"
 
@@ -22,8 +22,7 @@ const MenuComponent = ({
 }: MenuComponentProps): ReactElement => {
   const { colors } = useTheme()
   const [visible, setVisible] = useState(false)
-  
-  const touchableRef = useRef<View>(null)
+  const [triggerWidth, setTriggerWidth] = useState(0)
 
   const close = () => setVisible(false)
 
@@ -35,44 +34,41 @@ const MenuComponent = ({
   }
 
   return (
-    <View style={viewStyle} collapsable={false}>
-      <Pressable
-        ref={touchableRef}
-        collapsable={false}
-        onPress={() => setVisible(true)}
-        disabled={disabled}
-        style={({ pressed }) => [
-          { opacity: pressed ? 0.8 : 1 },
-          triggerStyle,
-        ]}
-      >
-        {children}
-      </Pressable>
-
+    <View style={viewStyle}>
       <Popover
         isVisible={visible}
         onRequestClose={close}
-        from={touchableRef as any}
+        from={(
+          <Pressable
+            onLayout={e => setTriggerWidth(e.nativeEvent.layout.width)}
+            onPress={() => setVisible(true)}
+            disabled={disabled}
+            style={({ pressed }) => [
+              { opacity: pressed ? 0.8 : 1 },
+              triggerStyle,
+            ]}
+          >
+            {children}
+          </Pressable>
+        )}
         backgroundStyle={{ backgroundColor: "transparent" }}
         offset={6}
         arrowSize={{ width: 0, height: 0 }}
+        popoverShift={{ x: -(triggerWidth / 2), y: 0 }}
         popoverStyle={{
           backgroundColor: 'transparent',
           borderWidth: 0,
-          shadowColor: 'transparent',
-          elevation: 0,
         }}
-        animationConfig={{ duration: 100 }}
+        animationConfig={{ duration: 80 }}
       >
         <View
           style={{
             flexGrow: 0,
             backgroundColor: colors.background,
             padding: 12,  
-            borderRadius: 16,
+            borderRadius: 8,
             borderWidth: 1,
             borderColor: colors.outline,
-            minWidth: 120,
           }}
         >
           {renderMenu()}

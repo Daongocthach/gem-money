@@ -116,7 +116,7 @@ const Header = ({ title }: HeaderProps) => {
 
         {navigation.openDrawer && (
           <ButtonComponent
-            isIconOnly
+            mode="text"
             iconProps={{ name: 'TextAlignEnd', size: 25 }}
             onPress={() => navigation.openDrawer()}
           />

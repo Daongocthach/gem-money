@@ -6,9 +6,11 @@ import {
 } from '@/components'
 
 import IMAGES from '@/assets/images'
+import useStore from '@/store'
 import { useRouter } from 'expo-router'
 
 export default function NoAccess() {
+  const { signOut } = useStore()
   const router = useRouter()
 
 
@@ -17,21 +19,24 @@ export default function NoAccess() {
       <ColumnComponent gap={30}>
         <Overview
           imageSource={IMAGES.LOGIN_BANNER}
-          title="you don't have access"
-          caption="contact administrator for more information"
-        />
+          title="log in to level up your projects"
+          caption="unlock tools to manage, collaborate, and excel. Take your projects further — smarter and faster"
+        >
+          <Overview.Banner />
+          <Overview.Title />
+          <Overview.Caption />
+        </Overview>
 
         <ColumnComponent gap={10}>
           <ButtonComponent
-            onPress={() => router.back()}
+            onPress={() => router.push('/')}
             textProps={{
               text: 'back to home',
               color: 'onPrimary',
             }}
           />
           <ButtonComponent
-            outline
-            onPress={() => router.back()}
+            onPress={() => {}}
             textProps={{
               text: 'logout',
             }}

@@ -1,5 +1,4 @@
 import { useTheme } from "@/hooks"
-import { formatNumberWithDots, parseDotsToNumber } from "@/utils"
 import { icons } from 'lucide-react-native'
 import React, { createContext, ReactNode, useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -50,14 +49,13 @@ const LeftIcon = ({
   return (
     <View style={styles.leftIcon}>
       <ButtonComponent
-        isIconOnly
+        mode="text"
         iconProps={{ name, size, color: isFocused ? colors.primary : colors.icon }}
         onPress={onPress}
       />
     </View>
   )
 }
-LeftIcon.displayName = "TextInputLeftIcon"
 
 const RightIcon = ({
   iconProps,
@@ -71,7 +69,7 @@ const RightIcon = ({
   return (
     <View style={styles.rightGroup}>
       <ButtonComponent
-        isIconOnly
+        mode="text"
         iconProps={{
           name, size,
           color: isFocused ? (color ?? colors.primary) : colors.icon
@@ -81,7 +79,6 @@ const RightIcon = ({
     </View>
   )
 }
-RightIcon.displayName = "TextInputRightIcon"
 
 const RightGroup = ({ children }: { children: ReactNode }) => (
   <RowComponent style={styles.rightGroup} gap={4}>{children}</RowComponent>
@@ -92,19 +89,18 @@ const ClearButton = () => {
   if (!value) return null
   return (
     <ButtonComponent
-      isIconOnly
+      mode="text"
       iconProps={{ name: 'X', size: 24, color: colors.icon }}
       onPress={() => onChangeText('')}
     />
   )
 }
-RightGroup.displayName = "TextInputRightGroup"
 
 const TogglePasswordButton = () => {
   const { showPassword, setShowPassword, isFocused, colors } = useTextInputCtx()
   return (
     <ButtonComponent
-      isIconOnly
+      mode="text"
       iconProps={{
         name: showPassword ? 'EyeOff' : 'Eye',
         size: 20,
@@ -124,8 +120,6 @@ interface MainProps extends TextInputProps {
   labelStyle?: TextStyle
   viewStyle?: ViewStyle
   outline?: boolean
-  isCurrency?: boolean
-  suffix?: string,
 }
 
 const TextInputComponent = ({
@@ -136,8 +130,6 @@ const TextInputComponent = ({
   labelStyle,
   viewStyle,
   outline,
-  isCurrency,
-  suffix,
   ...props
 }: MainProps) => {
   const { t } = useTranslation()
@@ -145,33 +137,22 @@ const TextInputComponent = ({
   const [isFocused, setIsFocused] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
 
-  const displayValue = isCurrency
-    ? formatNumberWithDots(props.value ?? '')
-    : (props.value ?? '')
+  const value = props.value ?? ''
 
   const childrenArray = React.Children.toArray(children)
 
   const leftContent = childrenArray.filter(
-    (child: any) => child.type?.displayName === "TextInputLeftIcon"
+    (child: any) => child.type === LeftIcon
   )
 
-  const rightIcon = childrenArray.find(
-    (child: any) => child.type?.displayName === "TextInputRightIcon"
-  )
-
-  const rightGroup = childrenArray.find(
-    (child: any) => child.type?.displayName === "TextInputRightGroup"
-  )
+  const rightIcon = childrenArray.find((child: any) => child.type === RightIcon)
+  const rightGroup = childrenArray.find((child: any) => child.type === RightGroup)
 
   return (
     <TextInputCtx.Provider value={{
-      isFocused,
-      setIsFocused,
-      showPassword,
-      setShowPassword,
-      colors,
-      value: displayValue,
-      errorMessage,
+      isFocused, setIsFocused,
+      showPassword, setShowPassword,
+      colors, value, errorMessage,
       onChangeText: props.onChangeText ?? (() => { })
     }}>
       <ColumnComponent gap={4} style={[styles.container, viewStyle]}>
@@ -210,15 +191,6 @@ const TextInputComponent = ({
               props.onBlur?.(e)
             }}
             placeholderTextColor={colors.icon}
-            value={displayValue}
-            onChangeText={(text) => {
-              if (isCurrency) {
-                const rawValue = parseDotsToNumber(text)
-                props.onChangeText?.(rawValue)
-              } else {
-                props.onChangeText?.(text)
-              }
-            }}
             style={[
               styles.input,
               { color: colors.onBackground, paddingLeft: 12 },
@@ -226,11 +198,6 @@ const TextInputComponent = ({
             ]}
           />
 
-          {suffix && (
-            <View style={{ paddingRight: 15 }}>
-              <TextComponent text={suffix} color="icon" type="caption" />
-            </View>
-          )}
           {rightIcon}
           {rightGroup}
         </View>
@@ -263,7 +230,7 @@ const styles = StyleSheet.create({
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 16,
+    borderRadius: 8,
     minHeight: 44,
     overflow: 'hidden',
   },

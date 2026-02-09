@@ -10,7 +10,7 @@ export type ApiResponse<T> = {
 
 export type DropdownProps = {
   label: string
-  value: string | number
+  value: string
 }
 
 export type PaginatedResponse<T> = {

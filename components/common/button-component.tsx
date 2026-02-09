@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient'
 import { ReactNode, useMemo } from "react"
 import {
   ActivityIndicator,
@@ -6,6 +5,7 @@ import {
   TouchableOpacityProps,
 } from "react-native"
 
+import { useTheme } from "@/hooks"
 import { useGetColorByKey } from "@/hooks/use-get-color-by-key"
 import { ThemeColorKeys } from '@/types'
 import Icon, { IconComponentProps } from "./icon-component"
@@ -16,11 +16,7 @@ interface ButtonComponentProps extends TouchableOpacityProps {
   backgroundColor?: ThemeColorKeys
   disabled?: boolean
   loading?: boolean
-  outline?: boolean
-  ghost?: boolean
-  isIconOnly?: boolean
-  isLinearGradient?: boolean
-  linearGradientColors?: string[]
+  mode?: "contained" | "outlined" | "text"
   buttonStyle?: TouchableOpacityProps["style"]
   iconProps?: IconComponentProps
   rightIconProps?: IconComponentProps
@@ -32,11 +28,7 @@ export default function ButtonComponent({
   backgroundColor = "primary",
   disabled = false,
   loading = false,
-  outline = false,
-  ghost = false,
-  isIconOnly = false,
-  isLinearGradient = false,
-  linearGradientColors = ['#31cce8', '#6ae1da'],
+  mode = "contained",
   buttonStyle,
   iconProps,
   rightIconProps,
@@ -44,89 +36,99 @@ export default function ButtonComponent({
   ...props
 }: ButtonComponentProps) {
   const { getColorByKey } = useGetColorByKey()
+  const { colors } = useTheme()
 
-  const { bgColor, borderColor, contentColor, padding, borderWidth } = useMemo(() => {
-    const background = (ghost || outline || isIconOnly) ?
-      'transparent' :
-      getColorByKey(backgroundColor)
+  const styles = useMemo(() => {
+    const mainColor = getColorByKey(backgroundColor)
 
-    const color = iconProps?.color ?
-      iconProps.color :
-      (ghost || isIconOnly) ?
-        'icon' :
-        outline ? backgroundColor : 'white'
+    const config = {
+      contained: {
+        bg: mainColor ?? colors.primary,
+        border: 0,
+        content: colors.onPrimary,
+        padding: 12,
+      },
+      outlined: {
+        bg: "transparent",
+        border: 1,
+        content: mainColor ?? colors.primary,
+        padding: 12,
+      },
+      text: {
+        bg: "transparent",
+        border: 0,
+        content: mainColor ?? colors.text,
+        padding: 0,
+      }
+    }
+
+    const currentVariant = config[mode]
 
     return {
-      bgColor: background,
-      borderColor: getColorByKey(backgroundColor),
-      contentColor: getColorByKey(color),
-      padding: ghost ? 0 : isIconOnly ? 0 : 12,
-      borderWidth: outline ? 1 : 0
+      backgroundColor: currentVariant.bg,
+      borderColor: mainColor,
+      borderWidth: currentVariant.border,
+      contentColor: iconProps?.color ? getColorByKey(iconProps.color) : currentVariant.content,
+      padding: currentVariant.padding,
     }
-  }, [ghost, outline, isIconOnly, getColorByKey, backgroundColor, iconProps?.color])
+  }, [mode, backgroundColor, getColorByKey, iconProps?.color])
+
 
   return (
     <TouchableOpacity
       disabled={disabled || loading}
+      activeOpacity={0.7}
+      style={[
+        {
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: styles.padding,
+          borderRadius: 12,
+          backgroundColor: styles.backgroundColor,
+          borderWidth: styles.borderWidth,
+          borderColor: styles.borderColor,
+          opacity: (disabled || loading) ? 0.5 : 1,
+        },
+        buttonStyle,
+      ]}
       {...props}
     >
-      <LinearGradient
-        colors={
-          isLinearGradient
-            ? [linearGradientColors[0], linearGradientColors[1]]
-            : [bgColor!, bgColor!]
-        }
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        style={[
-          {
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            borderRadius: isIconOnly ? 0 : 16,
-            borderColor: borderColor,
-            borderWidth,
-            opacity: (disabled || loading) ? 0.6 : 1,
-            padding,
-          },
-          buttonStyle,
-        ]}
-      >
-        {loading ? (
-          <ActivityIndicator
-            color={contentColor}
-            size={ghost ? (iconProps?.size || 20) : 'small'}
-            style={!ghost ? { marginRight: 8 } : null}
-          />
-        ) : (
-          iconProps?.name && (
+      {loading ? (
+        <ActivityIndicator color={styles.contentColor} size="small" />
+      ) : (
+        <>
+          {iconProps?.name && (
             <Icon
-              size={20}
-              color={contentColor}
-              style={{ marginRight: (textProps?.text || children) ? 6 : 0 }}
+              size={iconProps?.size || 20}
+              color={styles.contentColor}
+              style={{ marginRight: (textProps?.text || children) ? 8 : 0 }}
               {...iconProps}
             />
-          )
-        )}
-        {textProps?.text && (
-          <TextComponent
-            color={contentColor ?? "text"}
-            text={textProps.text}
-            fontWeight={'medium'}
-            numberOfLines={1}
-            {...textProps}
-          />
-        )}
-        {children}
-        {rightIconProps?.name && (
-          <Icon
-            size={20}
-            color={contentColor}
-            style={{ marginLeft: (textProps?.text || children) ? 6 : 0 }}
-            {...rightIconProps}
-          />
-        )}
-      </LinearGradient>
+          )}
+
+          {textProps?.text && (
+            <TextComponent
+              color={styles.contentColor as ThemeColorKeys}
+              text={textProps.text}
+              fontWeight={'semibold'}
+              numberOfLines={1}
+              {...textProps}
+            />
+          )}
+
+          {children}
+
+          {rightIconProps?.name && (
+            <Icon
+              size={rightIconProps?.size || 20}
+              color={styles.contentColor}
+              style={{ marginLeft: (textProps?.text || children) ? 8 : 0 }}
+              {...rightIconProps}
+            />
+          )}
+        </>
+      )}
     </TouchableOpacity>
   )
 }

@@ -121,7 +121,7 @@ export default function MultipleListSelector({
 
           {!hideClear && selected.length > 0 && (
             <ButtonComponent
-              isIconOnly
+              mode="text"
               iconProps={{ name: 'X', size: 14, color: colors.icon }}
               onPress={clearAll}
             />
@@ -147,7 +147,7 @@ export default function MultipleListSelector({
                   style={{ maxWidth: 120 }}
                 />
                 <ButtonComponent
-                  isIconOnly
+                  mode="text"
                   iconProps={{
                     name: 'X',
                     size: 12,
@@ -207,7 +207,7 @@ export default function MultipleListSelector({
                         style={{ maxWidth: 120 }}
                       />
                       <ButtonComponent
-                        isIconOnly
+                        mode="text"
                         iconProps={{
                           name: 'X',
                           size: 12,

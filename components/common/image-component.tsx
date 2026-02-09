@@ -51,7 +51,6 @@ export default function ImageComponent({
   } as const
 
   const handlePress = () => {
-    console.log('ImageComponent - handlePress', { uri, isShowViewer, error })
     if (uri && isShowViewer && !error) open(uri)
   }
 
@@ -62,7 +61,7 @@ export default function ImageComponent({
           {
             width: '100%',
             height: '100%',
-            borderRadius: 16,
+            borderRadius: 8,
             backgroundColor: colors.card,
             alignItems: 'center',
             justifyContent: 'center',
@@ -92,7 +91,7 @@ export default function ImageComponent({
           style={{
             width: '100%',
             height: '100%',
-            borderRadius: 16,
+            borderRadius: 8,
             borderWidth: isOutline ? 1 : 0,
             borderColor: isOutline ? colors.outlineVariant : 'transparent',
           }}

@@ -171,7 +171,7 @@ export default function OTPInput({
                     }}
                     disabled={!isResendActive}
                     loading={loading}
-                    isIconOnly
+                    mode="text"
                 />
             }
             {errorMessage && (

@@ -35,7 +35,7 @@ type FilesPreviewProps = {
           >
             <TextComponent text={item.name} />
             <ButtonComponent
-              isIconOnly
+              mode="text"
               iconProps={{ name: 'X', size: 12 }}
               onPress={() => handleRemoveFile(item)}
             />

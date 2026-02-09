@@ -53,7 +53,7 @@ export default function TransactionsScreen() {
                 menuChildren={() => (
                     <ColumnComponent gap={24}>
                         <ButtonComponent
-                            isIconOnly
+                            mode="text"
                             iconProps={{ name: 'Pencil', size: 14 }}
                             textProps={{ text: 'edit' }}
                             onPress={() => {
@@ -62,7 +62,7 @@ export default function TransactionsScreen() {
                             buttonStyle={{ justifyContent: 'flex-start' }}
                         />
                         <ButtonComponent
-                            isIconOnly
+                            mode="text"
                             iconProps={{
                                 name: 'Trash2',
                                 color: 'error',

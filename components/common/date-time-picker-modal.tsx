@@ -57,12 +57,12 @@ export default function DateTimePickerModal({
                 >
                     <ButtonComponent
                         textProps={{ text: 'cancel', type: 'title2' }}
-                        ghost
+                        mode="text"
                         onPress={onCancel}
                     />
                     <ButtonComponent
                         textProps={{ text: 'confirm', color: 'primary', type: 'title2' }}
-                        ghost
+                        mode="text"
                         onPress={onConfirm}
                     />
                 </RowComponent>

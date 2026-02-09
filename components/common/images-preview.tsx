@@ -35,7 +35,7 @@ export default function ImagesPreview({ images, setImages }: ImagesPreviewProps)
             isShowViewer
           />
           <ButtonComponent
-            isIconOnly
+            mode="text"
             iconProps={{ name: 'X', size: 12 }}
             onPress={() => handleRemoveFile(item)}
             style={{
