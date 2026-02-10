@@ -1,13 +1,13 @@
 import { useTranslation } from "react-i18next"
 
 import {
-    ButtonComponent,
-    ColumnComponent,
-    Container,
-    FlatListComponent,
-    IconComponent,
-    RowComponent,
-    TextComponent
+  ButtonComponent,
+  ColumnComponent,
+  Container,
+  FlatListComponent,
+  IconComponent,
+  RowComponent,
+  TextComponent
 } from "@/components"
 import AddIncomeForm from "@/components/incomes/add-income"
 import { useHomeScreen } from "@/components/jars/hooks/use-jars"
@@ -93,29 +93,17 @@ export default function JarsScreen() {
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }: { item: Jar }) => <JarCard {...item} />}
           ListHeaderComponent={
-            <RowComponent>
-              <ButtonComponent
-                iconProps={{
-                  name: "CircleFadingPlus"
-                }}
-                textProps={{
-                  text: "new_jar",
-                }}
-                buttonStyle={{ padding: 8 }}
-                onPress={() => router.push('/incomes')}
-              />
-              <ButtonComponent
-                iconProps={{
-                  name: "SquarePen"
-                }}
-                textProps={{
-                  text: "edit_jar",
-                }}
-                buttonStyle={{ padding: 8 }}
-                onPress={() => router.push('/incomes')}
-              />
-
-            </RowComponent>
+            <ButtonComponent
+              mode="outlined"
+              iconProps={{
+                name: "Settings2"
+              }}
+              textProps={{
+                text: "manage_jars",
+              }}
+              buttonStyle={{ padding: 8 }}
+              onPress={() => router.push('/manage-jars')}
+            />
           }
           onRefresh={refetch}
           refreshing={isRefetching}

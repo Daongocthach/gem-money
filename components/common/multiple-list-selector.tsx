@@ -222,13 +222,15 @@ export default function MultipleListSelector({
               )}
 
               {setSearchValue && (
-                <TextInputComponent
-                  value={searchValue}
-                  onChangeText={setSearchValue}
-                  placeholder={searchPlaceholder}
-                >
+                <TextInputComponent mode="outlined">
+                  <TextInputComponent.LeftIcon name="Search" />
+                  <TextInputComponent.Field
+                    value={searchValue}
+                    onChangeText={setSearchValue}
+                    placeholder={searchPlaceholder}
+                  />
                   <TextInputComponent.RightGroup>
-                    <TextInputComponent.Clear />
+                    <TextInputComponent.Clear onClear={() => setSearchValue('')} />
                   </TextInputComponent.RightGroup>
                 </TextInputComponent>
               )}

@@ -1,5 +1,3 @@
-import { Controller, useForm } from 'react-hook-form'
-
 import {
   ButtonComponent,
   ColumnComponent,
@@ -8,9 +6,9 @@ import {
   TextInputComponent
 } from '@/components'
 import { IncomeFormValues } from '@/types'
+import { Controller, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { useIncomeMutation } from './hooks/use-income-mutation'
-
 
 export default function AddIncomeForm() {
   const { t } = useTranslation()
@@ -24,6 +22,7 @@ export default function AddIncomeForm() {
       errors
     }
   } = useForm<IncomeFormValues>({
+    mode: 'onChange', // Giúp isValid cập nhật ngay lập tức
     defaultValues: {
       amount: '',
       note: '',
@@ -40,6 +39,7 @@ export default function AddIncomeForm() {
     <ColumnComponent gap={15} style={{ padding: 16 }}>
       <TextComponent text='add_new_income' type="title" textAlign="center" />
 
+      {/* Amount Input */}
       <Controller
         control={control}
         name="amount"
@@ -47,43 +47,48 @@ export default function AddIncomeForm() {
           required: 'please enter an amount',
           validate: value => parseFloat(value) > 0 || 'amount must be greater than 0'
         }}
-        render={({ field: { value, onChange } }) => (
+        render={({ field: { value, onChange, onBlur } }) => (
           <TextInputComponent
-            label="amount"
-            placeholder="ex: 1000000"
-            keyboardType="numeric"
-            value={value}
-            onChangeText={onChange}
             errorMessage={errors.amount?.message}
-            outline
-            isCurrency
-            suffix='đ'
+            mode="outlined"
           >
+            {/* Sử dụng .Field để nhận các props từ Controller */}
+            <TextInputComponent.Field
+              placeholder="ex: 1000000"
+              keyboardType="numeric"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+            />
             <TextInputComponent.RightGroup>
-              <TextInputComponent.Clear />
+              <TextComponent text="đ" color="icon" style={{ marginRight: 8 }} />
+              <TextInputComponent.Clear onClear={() => onChange('')} />
             </TextInputComponent.RightGroup>
           </TextInputComponent>
         )}
       />
 
+      {/* Note Input */}
       <Controller
         control={control}
         name="note"
-        render={({ field: { value, onChange } }) => (
-          <TextInputComponent
-            label="note"
-            placeholder={t('ex') + ': Lương tháng '+ new Date().getMonth()}
-            value={value}
-            onChangeText={onChange}
-            outline
-          />
+        render={({ field: { value, onChange, onBlur } }) => (
+          <TextInputComponent mode="outlined">
+            <TextInputComponent.Field
+              placeholder={`${t('ex')}: Lương tháng ${new Date().getMonth() + 1}`}
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+            />
+          </TextInputComponent>
         )}
       />
 
+      {/* Date Picker */}
       <Controller
         control={control}
         name="date"
-        rules={{ required: true }}
+        rules={{ required: 'date is required' }}
         render={({ field: { value, onChange } }) => (
           <DateTimePicker
             mode='date'

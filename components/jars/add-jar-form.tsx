@@ -27,6 +27,7 @@ export default function AddJarForm({ onSuccess }: AddJarFormProps) {
   const queryClient = useQueryClient()
 
   const { control, handleSubmit, formState: { isValid, errors } } = useForm<JarFormValues>({
+    mode: 'onChange',
     defaultValues: {
       name: '',
       percentage: '',
@@ -55,37 +56,54 @@ export default function AddJarForm({ onSuccess }: AddJarFormProps) {
     <ColumnComponent gap={15} style={{ padding: 16 }}>
       <TextComponent text="Thêm hũ mới" type="title" textAlign="center" />
 
+      {/* Tên hũ */}
       <Controller
         control={control}
         name="name"
         rules={{ required: 'Tên hũ không được để trống' }}
-        render={({ field: { value, onChange } }) => (
+        render={({ field: { value, onChange, onBlur } }) => (
           <TextInputComponent
-            label="Tên hũ"
-            placeholder="Ví dụ: Tiền tiết kiệm"
-            value={value}
-            onChangeText={onChange}
             errorMessage={errors.name?.message}
-          />
+            mode="outlined"
+          >
+            <TextInputComponent.Field
+              placeholder="Ví dụ: Tiền tiết kiệm"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+            />
+            <TextInputComponent.RightGroup>
+              <TextInputComponent.Clear onClear={() => onChange('')} />
+            </TextInputComponent.RightGroup>
+          </TextInputComponent>
         )}
       />
 
+      {/* Phần trăm (%) */}
       <Controller
         control={control}
         name="percentage"
         rules={{ 
           required: 'Vui lòng nhập phần trăm',
-          validate: v => parseFloat(v) <= 100 || 'Không được quá 100%' 
+          validate: v => (parseFloat(v) >= 0 && parseFloat(v) <= 100) || 'Phần trăm từ 0 - 100' 
         }}
-        render={({ field: { value, onChange } }) => (
+        render={({ field: { value, onChange, onBlur } }) => (
           <TextInputComponent
-            label="Phần trăm (%)"
-            placeholder="0"
-            keyboardType="numeric"
-            value={value}
-            onChangeText={onChange}
             errorMessage={errors.percentage?.message}
-          />
+            mode="outlined"
+          >
+            <TextInputComponent.Field
+              placeholder="0"
+              keyboardType="numeric"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+            />
+            <TextInputComponent.RightGroup>
+              <TextComponent text="%" color="icon" style={{ marginRight: 8 }} />
+              <TextInputComponent.Clear onClear={() => onChange('')} />
+            </TextInputComponent.RightGroup>
+          </TextInputComponent>
         )}
       />
 

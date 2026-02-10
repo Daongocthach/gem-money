@@ -7,11 +7,9 @@ import { DropdownProps } from '@/types'
 import ButtonComponent from './button-component'
 import ColumnComponent from './column-component'
 import FlatListComponent from './flat-list-component'
-import IconComponent from './icon-component'
 import PopupComponent from './popup-component'
 import RowComponent from './row-component'
 import TextComponent from './text-component'
-import TextInputComponent from './text-input-component'
 
 interface SingleListSelectorProps {
     selects: DropdownProps[]
@@ -130,32 +128,7 @@ export default function SingleListSelector({
                 <FlatListComponent
                     data={selects}
                     keyExtractor={(item) => item.value.toString()}
-                    ListHeaderComponent={
-                        <ColumnComponent gap={8}>
-                            {selected?.label &&
-                                <TextInputComponent
-                                    readOnly
-                                    value={selected.label}
-                                    placeholder={searchPlaceholder}
-                                    style={{ backgroundColor: colors.card }}
-                                >
-                                    <TextInputComponent.RightGroup>
-                                        <TextInputComponent.Clear />
-                                    </TextInputComponent.RightGroup>
-                                </TextInputComponent>
-                            }
 
-                            <TextInputComponent
-                                value={searchValue}
-                                onChangeText={setSearchValue}
-                                placeholder={searchPlaceholder}
-                            >
-                                <TextInputComponent.RightGroup>
-                                    <TextInputComponent.Clear />
-                                </TextInputComponent.RightGroup>
-                            </TextInputComponent>
-                        </ColumnComponent>
-                    }
                     stickyHeaderIndices={[0]}
                     renderItem={({ item }: { item: DropdownProps }) => {
                         const isSelected = item.value === selected?.value
@@ -186,13 +159,6 @@ export default function SingleListSelector({
                                         }}
                                     />
 
-                                    {isSelected && (
-                                        <IconComponent
-                                            name="Check"
-                                            size={18}
-                                            color={colors.primary}
-                                        />
-                                    )}
                                 </RowComponent>
                                 <View style={{ height: 1, backgroundColor: colors.outlineVariant }} />
                             </ColumnComponent>

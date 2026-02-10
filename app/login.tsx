@@ -45,9 +45,10 @@ export default function Login() {
           caption="unlock tools to manage, collaborate, and excel. Take your projects further — smarter and faster"
         >
           <Overview.Banner />
-          <Overview.Title  />
+          <Overview.Title />
           <Overview.Caption />
         </Overview>
+        
         <CardContainer isBorder style={{ marginTop: 20 }}>
           <ColumnComponent gap={24}>
             <ColumnComponent gap={8}>
@@ -59,6 +60,7 @@ export default function Login() {
             </ColumnComponent>
 
             <ColumnComponent gap={16}>
+              {/* Email Input */}
               <Controller
                 control={control}
                 name="email"
@@ -70,25 +72,26 @@ export default function Login() {
                   },
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (
-                  <TextInputComponent
-                    label="Email Address"
-                    placeholder="enter your email"
-                    value={value}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    errorMessage={errors.email?.message}
+                  <TextInputComponent 
+                    errorMessage={errors.email?.message} 
+                    mode="outlined"
                   >
                     <TextInputComponent.LeftIcon name="Mail" />
+                    <TextInputComponent.Field
+                      placeholder="enter your email"
+                      value={value}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                    />
                     <TextInputComponent.RightGroup>
-                      <TextInputComponent.Clear />
+                      <TextInputComponent.Clear onClear={() => onChange('')} />
                     </TextInputComponent.RightGroup>
                   </TextInputComponent>
                 )}
               />
 
-              {/* Password Input */}
               <Controller
                 control={control}
                 name="password"
@@ -100,18 +103,20 @@ export default function Login() {
                   },
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (
-                  <TextInputComponent
-                    label="Password"
-                    placeholder="enter your password"
-                    secureTextEntry
-                    value={value}
-                    onChangeText={onChange}
-                    onBlur={onBlur}
+                  <TextInputComponent 
                     errorMessage={errors.password?.message}
+                    mode="outlined"
                   >
                     <TextInputComponent.LeftIcon name="Lock" />
+                    <TextInputComponent.Field
+                      placeholder="enter your password"
+                      secureTextEntry
+                      value={value}
+                      onChangeText={onChange}
+                      onBlur={onBlur}
+                    />
                     <TextInputComponent.RightGroup>
-                      <TextInputComponent.Clear />
+                      <TextInputComponent.Clear onClear={() => onChange('')} />
                       <TextInputComponent.TogglePassword />
                     </TextInputComponent.RightGroup>
                   </TextInputComponent>
@@ -119,7 +124,6 @@ export default function Login() {
               />
             </ColumnComponent>
 
-            {/* Submit Button */}
             <ButtonComponent
               onPress={handleSubmit(onSubmit)}
               textProps={{ text: 'sign in' }}

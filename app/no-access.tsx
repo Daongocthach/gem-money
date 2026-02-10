@@ -15,12 +15,12 @@ export default function NoAccess() {
 
 
   return (
-    <Container headerTitle='no access'>
+    <Container headerTitle='no_access'>
       <ColumnComponent gap={30}>
         <Overview
           imageSource={IMAGES.LOGIN_BANNER}
-          title="log in to level up your projects"
-          caption="unlock tools to manage, collaborate, and excel. Take your projects further — smarter and faster"
+          title="access_denied"
+          caption="you_do_not_have_permission_to_access_this_section"
         >
           <Overview.Banner />
           <Overview.Title />
@@ -31,7 +31,7 @@ export default function NoAccess() {
           <ButtonComponent
             onPress={() => router.push('/')}
             textProps={{
-              text: 'back to home',
+              text: 'back_to_home',
               color: 'onPrimary',
             }}
           />

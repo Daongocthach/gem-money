@@ -20,7 +20,6 @@ export { default as FlatListComponent } from "@/components/common/flat-list-comp
 export { default as FloatButton } from "@/components/common/float-button"
 export { default as HapticTab, default as HapticTabComponent } from "@/components/common/haptic-tab"
 export { default as IconComponent } from "@/components/common/icon-component"
-export { default as IconLabel } from "@/components/common/icon-label"
 export { default as ImageComponent } from "@/components/common/image-component"
 export { default as ImagesPreview } from "@/components/common/images-preview"
 export { default as InlineDropdown } from "@/components/common/inline-dropdown"

@@ -11,6 +11,7 @@ import {
 } from '@/components'
 import { TransactionFormValues } from '@/types'
 import { useTransactionMutations } from './hooks/use-transaction-mutation'
+
 interface Props {
     jarId: string;
     jarName?: string;
@@ -28,6 +29,7 @@ export default function AddTransactionForm({ jarId, jarName, onSuccess }: Props)
       errors
     }
   } = useForm<TransactionFormValues>({
+    mode: 'onChange',
     defaultValues: {
       amount: '',
       note: '',
@@ -73,38 +75,40 @@ export default function AddTransactionForm({ jarId, jarName, onSuccess }: Props)
           required: 'please enter an amount',
           validate: value => parseFloat(value.toString()) > 0 || 'amount must be greater than 0'
         }}
-        render={({ field: { value, onChange } }) => (
+        render={({ field: { value, onChange, onBlur } }) => (
           <TextInputComponent
-            label="amount"
-            placeholder="0"
-            keyboardType="numeric"
-            value={value}
-            onChangeText={onChange}
             errorMessage={errors.amount?.message}
-            outline
-            isCurrency
-            suffix='đ'
+            mode="outlined"
           >
+            <TextInputComponent.Field
+              placeholder="0"
+              keyboardType="numeric"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+            />
             <TextInputComponent.RightGroup>
-              <TextInputComponent.Clear />
+              <TextComponent text="đ" color="icon" style={{ marginRight: 8 }} />
+              <TextInputComponent.Clear onClear={() => onChange('')} />
             </TextInputComponent.RightGroup>
           </TextInputComponent>
         )}
       />
 
+      {/* Note Input */}
       <Controller
         control={control}
         name="note"
-        render={({ field: { value, onChange } }) => (
-          <TextInputComponent
-            label="note"
-            placeholder="what did you spend on?"
-            value={value}
-            onChangeText={onChange}
-            outline
-          >
-             <TextInputComponent.RightGroup>
-              <TextInputComponent.Clear />
+        render={({ field: { value, onChange, onBlur } }) => (
+          <TextInputComponent mode="outlined">
+            <TextInputComponent.Field
+              placeholder="what did you spend on?"
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+            />
+            <TextInputComponent.RightGroup>
+              <TextInputComponent.Clear onClear={() => onChange('')} />
             </TextInputComponent.RightGroup>
           </TextInputComponent>
         )}
@@ -113,7 +117,7 @@ export default function AddTransactionForm({ jarId, jarName, onSuccess }: Props)
       <Controller
         control={control}
         name="date"
-        rules={{ required: true }}
+        rules={{ required: 'please select a date' }}
         render={({ field: { value, onChange } }) => (
           <DateTimePicker
             mode='date'
@@ -130,7 +134,7 @@ export default function AddTransactionForm({ jarId, jarName, onSuccess }: Props)
       <ButtonComponent
         textProps={{ text: 'Save Expense' }}
         onPress={handleSubmit(handleSave)}
-        disabled={!isValid}
+        disabled={!isValid || addTransaction.isPending}
         loading={addTransaction.isPending}
       />
     </ColumnComponent>

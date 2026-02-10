@@ -45,6 +45,7 @@ const screens = [
   'notifications',
   'incomes',
   'transactions',
+  'manage-jars',
 ]
 
 const authenScreens = [

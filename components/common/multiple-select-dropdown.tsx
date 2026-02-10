@@ -1,16 +1,15 @@
-import React, { useMemo, useRef, useState } from 'react'
+import React, { useMemo, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TouchableOpacity, View, ViewStyle } from 'react-native'
 import { MultiSelect } from 'react-native-element-dropdown'
 
-import { FONT_FAMILIES, windowHeight } from '@/constants'
+import { FONT_FAMILIES } from '@/constants'
 import { useTheme } from "@/hooks"
 import Checkbox from './check-box'
 import ColumnComponent from './column-component'
 import Icon from './icon-component'
 import RowComponent from './row-component'
 import TextComponent from './text-component'
-import TextInputComponent from './text-input-component'
 
 interface MultiSelectDropdownProps {
   selects: { label: string, value: string }[]
@@ -21,9 +20,6 @@ interface MultiSelectDropdownProps {
   style?: object
   viewStyle?: ViewStyle
   isSearch?: boolean
-  isSearchCustom?: boolean
-  searchCustomValue?: string
-  setSearchCustomValue?: (value: string) => void
   searchPlaceholder?: string
   disabled?: boolean
   onOpen?: () => void
@@ -45,9 +41,6 @@ export default function MultiSelectDropdown({
   style,
   viewStyle,
   isSearch = false,
-  isSearchCustom = false,
-  searchCustomValue,
-  setSearchCustomValue,
   searchPlaceholder = 'search',
   disabled = false,
   onOpen,
@@ -62,7 +55,6 @@ export default function MultiSelectDropdown({
   const { t } = useTranslation()
   const { colors } = useTheme()
   const triggerRef = useRef<View>(null)
-  const [dropdownPosition, setDropdownPosition] = useState<'top' | 'bottom'>('bottom')
 
   const dataTranslated = useMemo(
     () => selects.map(data => ({ ...data, label: t(data.label) })),
@@ -74,14 +66,6 @@ export default function MultiSelectDropdown({
       ? selected.map((it: any) => (typeof it === 'string' ? it : it?.value)).filter(Boolean)
       : []
     setSelected(values)
-  }
-  const updateDropdownPosition = () => {
-    triggerRef.current?.measureInWindow((_, y, __, h) => {
-      const centerY = y + h / 2
-      setDropdownPosition(
-        centerY > windowHeight / 2 ? 'top' : 'bottom'
-      )
-    })
   }
 
 
@@ -95,13 +79,6 @@ export default function MultiSelectDropdown({
       )}
       <View
         ref={triggerRef}
-        onLayout={() => {
-          triggerRef.current?.measureInWindow((x, y, w, h) => {
-            const triggerCenterY = y + h / 2
-            const isBelowHalf = triggerCenterY > windowHeight / 2
-            setDropdownPosition(isBelowHalf ? 'top' : 'bottom')
-          })
-        }}
       >
         <MultiSelect
           disable={disabled}
@@ -112,7 +89,6 @@ export default function MultiSelectDropdown({
           placeholder={t(placeholder)}
           search={isSearch}
           onChange={handleChange}
-          dropdownPosition={dropdownPosition}
           keyboardAvoiding={false}
           style={[
             {
@@ -156,26 +132,11 @@ export default function MultiSelectDropdown({
             <Icon name="ChevronDown" size={18} color="onCard" />
           )}
           onFocus={() => {
-            updateDropdownPosition()
             onOpen?.()
           }}
           flatListProps={{
             onEndReached: () => loadMore?.(),
             onEndReachedThreshold: 0.5,
-            stickyHeaderIndices: isSearchCustom ? [0] : [],
-            ListHeaderComponent: isSearchCustom ? (
-              <View style={{ padding: 4 }}>
-                <TextInputComponent
-                  value={searchCustomValue}
-                  onChangeText={setSearchCustomValue}
-                  placeholder={t(searchPlaceholder)}
-                >
-                  <TextInputComponent.RightGroup>
-                    <TextInputComponent.Clear />
-                  </TextInputComponent.RightGroup>
-                </TextInputComponent>
-              </View>
-            ) : null,
             ListEmptyComponent: hideFooter ? null :
               (!isLoading && selects?.length === 0) ? (
                 <TextComponent
