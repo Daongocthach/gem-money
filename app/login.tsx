@@ -6,15 +6,15 @@ import {
   KeyboardAwareWrapper,
   Overview,
   TextComponent,
-  TextInputComponent
-} from '@/components'
-import { useRouter } from 'expo-router'
-import { Controller, useForm } from 'react-hook-form'
+  TextInputComponent,
+} from "@/components"
+import { useRouter } from "expo-router"
+import { Controller, useForm } from "react-hook-form"
 
-import { showToast } from '@/alerts'
-import IMAGES from '@/assets/images'
-import useStore from '@/store'
-import { LoginFormInputs } from '@/types'
+import { showToast } from "@/alerts"
+import IMAGES from "@/assets/images"
+import useStore from "@/store"
+import { LoginFormInputs } from "@/types"
 
 export default function Login() {
   const router = useRouter()
@@ -25,15 +25,15 @@ export default function Login() {
     formState: { errors },
   } = useForm<LoginFormInputs>({
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
   })
 
   const onSubmit = (data: LoginFormInputs) => {
-    setActionName('isLoggedIn', true)
-    router.replace('/')
-    showToast('login_success')
+    setActionName("isLoggedIn", true)
+    router.replace("/")
+    showToast("login_success")
   }
 
   return (
@@ -48,8 +48,8 @@ export default function Login() {
           <Overview.Title />
           <Overview.Caption />
         </Overview>
-        
-        <CardContainer isBorder style={{ marginTop: 20 }}>
+
+        <CardContainer outline style={{ marginTop: 20 }}>
           <ColumnComponent gap={24}>
             <ColumnComponent gap={8}>
               <TextComponent text="sign in" type="title1" />
@@ -65,15 +65,15 @@ export default function Login() {
                 control={control}
                 name="email"
                 rules={{
-                  required: 'email is required',
+                  required: "email is required",
                   pattern: {
                     value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                    message: 'invalid email format',
+                    message: "invalid email format",
                   },
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (
-                  <TextInputComponent 
-                    errorMessage={errors.email?.message} 
+                  <TextInputComponent
+                    errorMessage={errors.email?.message}
                     mode="outlined"
                   >
                     <TextInputComponent.LeftIcon name="Mail" />
@@ -86,7 +86,7 @@ export default function Login() {
                       autoCapitalize="none"
                     />
                     <TextInputComponent.RightGroup>
-                      <TextInputComponent.Clear onClear={() => onChange('')} />
+                      <TextInputComponent.Clear onClear={() => onChange("")} />
                     </TextInputComponent.RightGroup>
                   </TextInputComponent>
                 )}
@@ -96,14 +96,14 @@ export default function Login() {
                 control={control}
                 name="password"
                 rules={{
-                  required: 'password is required',
+                  required: "password is required",
                   minLength: {
                     value: 3,
-                    message: 'password must be at least 3 characters',
+                    message: "password must be at least 3 characters",
                   },
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (
-                  <TextInputComponent 
+                  <TextInputComponent
                     errorMessage={errors.password?.message}
                     mode="outlined"
                   >
@@ -116,7 +116,7 @@ export default function Login() {
                       onBlur={onBlur}
                     />
                     <TextInputComponent.RightGroup>
-                      <TextInputComponent.Clear onClear={() => onChange('')} />
+                      <TextInputComponent.Clear onClear={() => onChange("")} />
                       <TextInputComponent.TogglePassword />
                     </TextInputComponent.RightGroup>
                   </TextInputComponent>
@@ -126,7 +126,7 @@ export default function Login() {
 
             <ButtonComponent
               onPress={handleSubmit(onSubmit)}
-              textProps={{ text: 'sign in' }}
+              textProps={{ text: "sign in" }}
             />
           </ColumnComponent>
         </CardContainer>
